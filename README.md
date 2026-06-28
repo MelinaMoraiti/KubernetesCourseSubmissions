@@ -7,4 +7,4 @@
 - [Exercise folder](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/main/first-deploy/log-output)
 ### Exercise 1.2.
 - [Release](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/releases/tag/1.2)
-- [Exercise folder]([https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/main/first-deploy](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/1.2/first-deploy/todo-app))
+- [Exercise folder](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/main/first-deploy/todo-app)
