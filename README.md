@@ -11,3 +11,5 @@
 ### Exercise 1.3.
 - [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/1.3)
 
+### Exercise 1.4.
+- [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/1.4)
