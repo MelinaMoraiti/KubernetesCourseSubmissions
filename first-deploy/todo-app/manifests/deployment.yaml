@@ -13,5 +13,8 @@ spec:
         app: todoapp
     spec:
       containers:
-        - name: logoutput
-          image: todo-app
+        - name: todoapp
+          image: melinadevops/todo-app
+          env:
+            - name: PORT
+              value: "8000"

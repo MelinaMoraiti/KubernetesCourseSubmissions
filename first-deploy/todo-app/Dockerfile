@@ -20,7 +20,7 @@ WORKDIR /
 
 # Copy binary from builder
 COPY --from=builder /build/todoapp .
-
+ENV PORT=8000
 # Expose port
 EXPOSE 8000
 

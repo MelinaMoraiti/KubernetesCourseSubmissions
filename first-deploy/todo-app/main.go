@@ -1,24 +1,38 @@
 package main
 
 import (
-	"net/http"
 	"fmt"
+	"net/http"
+	"os"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
-	"os"
 )
 
 func main() {
 	_ = godotenv.Load()
+
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+
 	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8000" 
-	}
+
+
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(fmt.Sprintf("Server started in port %s",port)))
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+		fmt.Fprint(w, `<!DOCTYPE html>
+        <html>
+        <head>
+          <title>To-Do App</title>
+        </head>
+        <body>
+          <h2>To-Do List</h2>
+          <p>Server running on port `+port+`</p>
+        </body>
+        </html>`)
 	})
-	http.ListenAndServe(fmt.Sprintf("0.0.0.0:"+port), r)
+
+	http.ListenAndServe("0.0.0.0:"+port, r)
 }
