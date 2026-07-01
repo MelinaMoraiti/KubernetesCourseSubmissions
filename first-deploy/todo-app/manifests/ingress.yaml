@@ -12,4 +12,4 @@ spec:
               service:
                 name: todoapp-svc
                 port:
-                  number: 2425
+                  number: 2427

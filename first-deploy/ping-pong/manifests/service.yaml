@@ -7,6 +7,6 @@ spec:
   selector:
     app: pingpong
   ports:
-    - port: 2345
+    - port: 2426
       protocol: TCP
       targetPort: 9000

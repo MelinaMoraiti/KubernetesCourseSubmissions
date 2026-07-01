@@ -7,6 +7,6 @@ spec:
   selector:
     app: logoutput
   ports:
-    - port: 2345
+    - port: 2425
       protocol: TCP
       targetPort: 3000
