@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: log-pong-ingress
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /current-status
+            pathType: Prefix
+            backend:
+              service:
+                name: logoutput-svc
+                port:
+                  number: 2425
+          - path: /pingpong
+            pathType: Prefix
+            backend:
+              service:
+                name: pingpong-svc
+                port:
+                  number: 2426
