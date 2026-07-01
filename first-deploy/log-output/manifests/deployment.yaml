@@ -15,3 +15,6 @@ spec:
       containers:
         - name: logoutput
           image: melinadevops/log_output:latest
+          env:
+            - name: PORT
+              value: "3000"

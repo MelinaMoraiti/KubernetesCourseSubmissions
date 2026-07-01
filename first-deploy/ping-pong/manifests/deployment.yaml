@@ -15,3 +15,6 @@ spec:
       containers:
         - name: pingpong
           image: melinadevops/pingpong:latest
+          env:
+            - name: PORT
+              value: "9000"
