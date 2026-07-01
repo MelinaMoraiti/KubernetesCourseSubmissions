@@ -17,8 +17,8 @@ func main() {
 	if port == "" {
 		port = "9000"
 	}
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-	    if r.URL.Path != "/" {
+	http.HandleFunc("/pingpong", func(w http.ResponseWriter, r *http.Request) {
+	    if r.URL.Path != "/pingpong" {
             return
         }
 		mu.Lock()
