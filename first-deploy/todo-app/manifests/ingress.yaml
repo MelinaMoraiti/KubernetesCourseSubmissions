@@ -13,11 +13,3 @@ spec:
                 name: todoapp-svc
                 port:
                   number: 2425
-
-          - path: /current-status
-            pathType: Prefix
-            backend:
-              service:
-                name: logoutput-svc
-                port:
-                  number: 2345
