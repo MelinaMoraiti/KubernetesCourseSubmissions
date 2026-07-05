@@ -6,17 +6,10 @@ spec:
   rules:
     - http:
         paths:
-          - path: /current-status
+          - path: /logs
             pathType: Prefix
             backend:
               service:
                 name: logoutput-svc
                 port:
                   number: 2425
-          - path: /pingpong
-            pathType: Prefix
-            backend:
-              service:
-                name: pingpong-svc
-                port:
-                  number: 2426
