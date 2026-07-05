@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: logoutput-dep
+  name: logoutput-dep-persistent
 spec:
   replicas: 1
   selector:
@@ -13,16 +13,17 @@ spec:
         app: logoutput
     spec:
       volumes: # Define volume
-        - name: shared-image
-          emptyDir: { }
+        - name: shared-logfile
+          persistentVolumeClaim:
+            claimName: logfile-claim
       containers:
         - name: logoutput
           image: melinadevops/log_output
           volumeMounts:
-          - name: shared-image
-            mountPath: /usr/src/app/files
+            - name: shared-logfile
+              mountPath: /usr/src/app/files
         - name: logserver
           image: melinadevops/logserver
           volumeMounts:
-            - name: shared-image
+            - name: shared-logfile
               mountPath: /usr/src/app/files
