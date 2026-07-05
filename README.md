@@ -19,3 +19,5 @@
 - **Exercise 1.8:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/1.8)
 
 - **Exercise 1.9:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/1.9)
+  
+- **Exercise 1.10:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/1.10)
