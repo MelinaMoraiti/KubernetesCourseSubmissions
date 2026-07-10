@@ -13,17 +13,15 @@ spec:
         app: logoutput
     spec:
       volumes: # Define volume
-        - name: shared-logfile
+        - name: shared-counter-file
           persistentVolumeClaim:
-            claimName: logfile-claim
+            claimName: counter-file-claim
       containers:
         - name: logoutput
-          image: melinadevops/log_output
+          image: melinadevops/log_output:v2
+          env:
+            - name: PORT
+              value: "3000"
           volumeMounts:
-            - name: shared-logfile
-              mountPath: /usr/src/app/files
-        - name: logserver
-          image: melinadevops/logserver
-          volumeMounts:
-            - name: shared-logfile
+            - name: shared-counter-file
               mountPath: /usr/src/app/files
