@@ -11,16 +11,18 @@ RUN go mod download
 COPY . .
 
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o todoapp main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o todoapp cmd/main.go
 
 # Final stage
-FROM scratch
+FROM alpine:latest
 
 WORKDIR /
 
 # Copy binary from builder
 COPY --from=builder /build/todoapp .
+
 ENV PORT=8000
+
 # Expose port
 EXPOSE 8000
 
