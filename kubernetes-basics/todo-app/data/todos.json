@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "task": "Create a weekly schedule with Google Calendar",
+    "done": false
+  },
+  {
+    "id": 2,
+    "task": "Make an appointment with an ophthalmologist",
+    "done": false
+  },
+  {
+    "id": 3,
+    "task": "Make LinkedIn Account",
+    "done": false
+  },
+  {
+    "id": 4,
+    "task": "Research market for new laptop",
+    "done": true
+  }
+]

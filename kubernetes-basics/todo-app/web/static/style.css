@@ -1,0 +1,40 @@
+/* Smooth transitions for interactive elements */
+.btn, input {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Custom completed item styling */
+.todo-completed {
+    color: #9ca3af;
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+/* Subtle focus ring improvement for inputs */
+input:focus {
+    outline: 2px solid #570df8;
+    outline-offset: 2px;
+}
+
+/* HTMX indicator animation for async requests */
+.htmx-request {
+    opacity: 0.5;
+    pointer-events: none;
+    transition: opacity 200ms ease-in;
+}
+
+/* Animation when new todos are swapped into the DOM */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#todos > div {
+    animation: fadeIn 0.25s ease-out forwards;
+}

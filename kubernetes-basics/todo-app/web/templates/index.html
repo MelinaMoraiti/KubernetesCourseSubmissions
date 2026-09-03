@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.18/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer data-domain="todo.astipan.com" src="https://analytics.ujstor.com/js/script.js"></script>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="container max-w-xl mx-auto">
+<h1 class="font-bold text-4xl my-16 text-center">ToDo App</h1>
+
+<img src="/static/images/current.jpg"
+     alt="Random Banner"
+     class="w-full h-48 object-cover rounded-xl my-6"
+     hx-get="/static/images/current.jpg" />
+
+<form id="todoForm" class="flex gap-2 my-6">
+    <input
+            id="todoInput"
+            type="text"
+            name="todo"
+            maxlength="140"
+            placeholder="Enter a new todo (max 140 characters)"
+            class="input input-bordered w-full"
+            required
+    />
+    <button type="submit" class="btn btn-primary">
+        Send
+    </button>
+</form>
+<div class="card bg-base-100 shadow-xl border border-base-300 p-6">
+    <h2 class="text-xl font-bold text-base-content mb-4 flex items-center justify-between">
+        <span>To-Do Items</span>
+    </h2>
+
+    <div id="todo-list" class="space-y-3">
+        {{ block "Todos" . }}
+        {{ if . }}
+        {{ range . }}
+        <div class="flex items-center justify-between p-3 rounded-lg bg-base-200/50 hover:bg-base-200 transition-colors border border-base-300/50">
+            <span class="text-base break-all pr-4 {{if .Done}} line-through text-base-content/40 {{else}} text-base-content {{end}}">
+                {{ .Task }}
+            </span>
+        </div>
+        {{ end }}
+        {{ else }}
+        <div class="text-center py-8 text-base-content/50">
+            <p>No tasks yet! Add one above.</p>
+        </div>
+        {{ end }}
+        {{ end }}
+    </div>
+</div>
+
+</body>
+</html>
