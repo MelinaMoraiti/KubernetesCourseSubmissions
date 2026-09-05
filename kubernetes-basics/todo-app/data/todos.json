@@ -17,6 +17,36 @@
   {
     "id": 4,
     "task": "Research market for new laptop",
+    "done": false
+  },
+  {
+    "id": 5,
+    "task": "Improve my CV using Canvas",
+    "done": false
+  },
+  {
+    "id": 6,
+    "task": "Install Ubuntu",
+    "done": false
+  },
+  {
+    "id": 7,
+    "task": "Book an appointment to issue new identity card",
     "done": true
+  },
+  {
+    "id": 8,
+    "task": "Book an appointment for nails therapy",
+    "done": false
+  },
+  {
+    "id": 9,
+    "task": "Book an appointment to assess autism",
+    "done": false
+  },
+  {
+    "id": 10,
+    "task": "Volunteer ",
+    "done": false
   }
 ]
