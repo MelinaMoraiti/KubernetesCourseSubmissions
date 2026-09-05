@@ -14,7 +14,7 @@ func main() {
     // Define cache parameters for Picsum image
 	imagePath := "web/static/images/current.jpg"
 	imageURL := "https://picsum.photos/1200"
-	cacheDuration := 1 * time.Minute
+	cacheDuration := 10 * time.Minute
 
 	if err := utils.CacheImage(imagePath, imageURL, cacheDuration); err != nil {
     	log.Printf("Warning: Failed to initial cache image: %v", err)
