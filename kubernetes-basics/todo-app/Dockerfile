@@ -19,7 +19,9 @@ FROM alpine:latest
 WORKDIR /
 
 # Copy binary from builder
-COPY --from=builder /build/todoapp .
+COPY --from=builder /build/todoapp ./
+COPY --from=builder /build/web ./web/
+COPY --from=builder /build/data ./data/
 
 ENV PORT=8000
 
