@@ -1,8 +1,8 @@
 package main
 
 import (
-	"strings"
 	"fmt"
+	"io"
 	"math/rand"
 	"net/http"
 	"os"
@@ -19,7 +19,20 @@ func generateRandomString(length int, charset string) string {
 	}
 	return string(b)
 }
+func fetchPings() string {
+	resp, err := http.Get("http://localhost:9000/pings")
+	if err != nil {
+		return "Error fetching pings"
+	}
+	defer resp.Body.Close()
 
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "Error reading response"
+	}
+
+	return string(body)
+}
 
 func main() {
 	const charset = "abcdefghijklmnopqrstuvwxyz" +
@@ -37,18 +50,14 @@ func main() {
 
 	// HTTP endpoint
     http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        counterData, err := os.ReadFile(counterFile)
-
-        if err != nil {
-            counterData = []byte("0")
-        }
+        pings := fetchPings()
         timestamp := time.Now().UTC().Format(time.RFC3339Nano)
 		fmt.Fprintf(
 			w,
-			"%s: %s.\nPing / Pongs: %s",
+			"%s: %s.\n%s",
 			timestamp,
 			randomString,
-			strings.TrimSpace(string(counterData)),
+			pings,
 		)
     })
 	// Start HTTP server

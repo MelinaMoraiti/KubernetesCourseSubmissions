@@ -12,16 +12,9 @@ spec:
       labels:
         app: pingpong
     spec:
-      volumes: # Define volume
-        - name: shared-counter-file
-          persistentVolumeClaim:
-            claimName: counter-file-claim
       containers:
         - name: pingpong
           image: melinadevops/pingpong:latest
           env:
             - name: PORT
               value: "9000"
-          volumeMounts:
-            - name: shared-counter-file
-              mountPath: /usr/src/app/files

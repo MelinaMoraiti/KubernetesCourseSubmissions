@@ -12,7 +12,7 @@ var (
 	mu      sync.Mutex
 )
 
-const filename = "/usr/src/app/files/counter.txt"
+const filename = "/counter.txt"
 
 // Opens (or creates) the counter file.
 func createFile(filename string) (*os.File, error) {
@@ -53,6 +53,7 @@ func main() {
 	}
 	defer counterFileHandle.Close()
     numOfRequests := 0
+    numOfRequests2 := 0
     writeToFile(counterFileHandle, "%d\n", numOfRequests)
 	http.HandleFunc("/pingpong", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/pingpong" {
@@ -69,9 +70,22 @@ func main() {
 
 		mu.Unlock()
 
-		fmt.Fprintf(w, "pong %d", numOfRequests)
+		fmt.Fprintf(w, "Ping / Pongs: %d", numOfRequests)
 	})
+	http.HandleFunc("/pings", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/pings" {
+			http.NotFound(w, r)
+			return
+		}
 
+		mu.Lock()
+
+		numOfRequests2++
+
+		mu.Unlock()
+
+		fmt.Fprintf(w, "Ping / Pongs: %d", numOfRequests2)
+	})
 	fmt.Printf("Listening on :%s\n", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		panic(err)
