@@ -15,6 +15,7 @@ WORKDIR /
 COPY --from=builder /app/log_output /log_output
 
 ENV PORT=3000
+ENV PING_PONG_APP_HOST="http://localhost:8081"
 
 EXPOSE 3000
 

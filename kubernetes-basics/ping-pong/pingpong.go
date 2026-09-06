@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"sync"
+	"github.com/joho/godotenv"
 )
 
 var (
@@ -40,6 +41,10 @@ func writeToFile(file *os.File, format string, a ...interface{}) {
 }
 
 func main() {
+    if err := godotenv.Load(); err != nil {
+        fmt.Println("Warning: .env file not found")
+    }
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "9000"
@@ -53,7 +58,6 @@ func main() {
 	}
 	defer counterFileHandle.Close()
     numOfRequests := 0
-    numOfRequests2 := 0
     writeToFile(counterFileHandle, "%d\n", numOfRequests)
 	http.HandleFunc("/pingpong", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/pingpong" {
@@ -77,14 +81,7 @@ func main() {
 			http.NotFound(w, r)
 			return
 		}
-
-		mu.Lock()
-
-		numOfRequests2++
-
-		mu.Unlock()
-
-		fmt.Fprintf(w, "Ping / Pongs: %d", numOfRequests2)
+		fmt.Fprintf(w, "Ping / Pongs: %d", numOfRequests)
 	})
 	fmt.Printf("Listening on :%s\n", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {

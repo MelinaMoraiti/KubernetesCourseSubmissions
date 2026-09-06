@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"time"
+    "github.com/joho/godotenv"
 )
 const counterFile = "/usr/src/app/files/counter.txt"
 
@@ -19,8 +20,8 @@ func generateRandomString(length int, charset string) string {
 	}
 	return string(b)
 }
-func fetchPings() string {
-	resp, err := http.Get("http://localhost:9000/pings")
+func fetchPings(pingsURL string) string {
+	resp, err := http.Get(pingsURL)
 	if err != nil {
 		return "Error fetching pings"
 	}
@@ -35,22 +36,24 @@ func fetchPings() string {
 }
 
 func main() {
+    if err := godotenv.Load(); err != nil {
+        fmt.Println("Warning: .env file not found")
+    }
+
 	const charset = "abcdefghijklmnopqrstuvwxyz" +
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" +
 		"@#!$%^&*()-+=_~`}{][|\\><?"
 
 	// Read port from environment variable (default 8080)
 	port := os.Getenv("PORT")
-	if port == "" {
-		port = "3000"
-	}
-
+    ping_pong_host := os.Getenv("PING_PONG_APP_HOST")
 	// Generated once at startup
 	randomString := generateRandomString(36, charset)
 
 	// HTTP endpoint
     http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        pings := fetchPings()
+        pingsURL := ping_pong_host + "/pings"
+        pings := fetchPings(pingsURL)
         timestamp := time.Now().UTC().Format(time.RFC3339Nano)
 		fmt.Fprintf(
 			w,
@@ -73,9 +76,9 @@ func main() {
 	defer ticker.Stop()
 
     for {
-        now := time.Now().UTC().Format(time.RFC3339Nano)
+        //now := time.Now().UTC().Format(time.RFC3339Nano)
 
-        fmt.Printf("%s: %s.", now, randomString)
+        //fmt.Printf("%s: %s.", now, randomString)
 
         <-ticker.C
     }
