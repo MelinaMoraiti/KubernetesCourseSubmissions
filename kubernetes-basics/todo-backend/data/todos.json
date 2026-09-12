@@ -48,10 +48,5 @@
     "id": 10,
     "task": "Register for tee exams",
     "done": false
-  },
-  {
-    "id": 11,
-    "task": "Create backup",
-    "done": false
   }
 ]

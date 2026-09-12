@@ -3,10 +3,9 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"encoding/json"
-	"fmt"
+
+
 	"time"
-	"todo-app/internal/models"
 )
 
 func DownloadImage(url, destination string) error {
@@ -42,20 +41,4 @@ func CacheImage(path, url string, maxAge time.Duration) error {
 	}
 
 	return nil
-}
-
-func FetchAllTodosFromJSON(filePath string) ([]models.Todo, error) {
-    file, err := os.Open(filePath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to open json file: %w", err)
-	}
-	defer file.Close()
-
-	var todos []models.Todo
-	decoder := json.NewDecoder(file)
-	if err := decoder.Decode(&todos); err != nil {
-		return nil, fmt.Errorf("failed to decode json data: %w", err)
-	}
-
-	return todos, nil
 }

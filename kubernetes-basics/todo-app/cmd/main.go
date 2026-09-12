@@ -12,7 +12,7 @@ import (
 func main() {
 	_ = godotenv.Load()
     // Define cache parameters for Picsum image
-	imagePath := "web/static/images/current.jpg"
+	imagePath := "/usr/src/app/images/current.jpg"
 	imageURL := "https://picsum.photos/1200"
 	cacheDuration := 10 * time.Minute
 

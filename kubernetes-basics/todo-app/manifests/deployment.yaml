@@ -1,27 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: todoapp-dep
+  name: todo-app-dep
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: todoapp
+      app: todo-app
   template:
     metadata:
       labels:
-        app: todoapp
+        app: todo-app
     spec:
       volumes: # Define volume
         - name: images
           persistentVolumeClaim:
             claimName: images-claim
       containers:
-        - name: todoapp
+        - name: todo-app
           image: melinadevops/todo-app
           env:
             - name: PORT
               value: "8000"
+            - name: TODO_BACKEND_URL
+              value: "http://todo-backend-svc:2428"
           volumeMounts:
             - name: images
               mountPath: /usr/src/app/images

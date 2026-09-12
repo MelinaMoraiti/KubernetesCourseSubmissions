@@ -21,9 +21,9 @@ WORKDIR /
 # Copy binary from builder
 COPY --from=builder /build/todoapp ./
 COPY --from=builder /build/web ./web/
-COPY --from=builder /build/data ./data/
 
 ENV PORT=8000
+ENV TODO_BACKEND_URL=http://todo-backend:9000
 
 # Expose port
 EXPOSE 8000
