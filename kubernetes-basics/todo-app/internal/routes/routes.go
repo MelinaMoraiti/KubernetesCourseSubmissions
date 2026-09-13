@@ -1,14 +1,18 @@
 package routes
 
 import (
-	"log"
-	"net/http"
-	"html/template"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-	"todo-app/internal/models"
-	"encoding/json"
-	"os"
+    "encoding/json"
+    "html/template"
+    "io"
+    "log"
+    "net/http"
+    "net/url"
+    "os"
+
+    "github.com/go-chi/chi/v5"
+    "github.com/go-chi/chi/v5/middleware"
+
+    "todo-app/internal/models"
 )
 
 func RegisterRoutes() http.Handler {
@@ -16,13 +20,14 @@ func RegisterRoutes() http.Handler {
 
 	r.Use(middleware.Logger)
 
-	r.Handle("/static/*",
-        http.StripPrefix("/static/",
-            http.FileServer(http.Dir("web/static")),
+	r.Handle("/images/*",
+        http.StripPrefix("/images/",
+            http.FileServer(http.Dir("/usr/src/app/images")),
         ),
     )
 
 	r.Get("/", indexHandler)
+	r.Post("/todos", createTodoHandler)
 	return r
 }
 var todoBackendURL = os.Getenv("TODO_BACKEND_URL")
@@ -65,4 +70,24 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if err := tmpl.Execute(w, todos); err != nil {
 		log.Printf("Could not execute template: %v", err)
 	}
+}
+func createTodoHandler(w http.ResponseWriter, r *http.Request) {
+	todo := r.FormValue("todo")
+
+	form := url.Values{}
+	form.Set("todo", todo)
+
+	resp, err := http.PostForm(
+		todoBackendURL+"/todos",
+		form,
+	)
+	if err != nil {
+		http.Error(w, "Could not contact todo backend", http.StatusBadGateway)
+		return
+	}
+
+	defer resp.Body.Close()
+
+	w.WriteHeader(resp.StatusCode)
+	io.Copy(w, resp.Body)
 }

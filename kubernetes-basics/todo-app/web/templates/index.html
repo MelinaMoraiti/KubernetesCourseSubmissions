@@ -11,7 +11,7 @@
 <body class="container max-w-xl mx-auto">
 <h1 class="font-bold text-4xl my-8 text-center">ToDo App</h1>
 
-<img src="/static/images/current.jpg"
+<img src="/images/current.jpg"
      alt="Random Banner"
      class="w-full h-48 object-cover rounded-xl my-6"
       />
@@ -19,7 +19,7 @@
     <form
         id="todoForm"
         class="flex gap-2 my-6"
-        hx-post="http://localhost:9000/todos"
+        hx-post="/todos"
         hx-trigger="submit"
         hx-target="#todo-list"
         hx-swap="innerHTML"
