@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"logoutput-dep-persistent","namespace":"exercises"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"logoutput"}},"template":{"metadata":{"labels":{"app":"logoutput"},"namespace":"exercises"},"spec":{"containers":[{"env":[{"name":"PORT","value":"3000"}],"image":"melinadevops/log_output:v2","name":"logoutput"}]}}}}
+  creationTimestamp: "2026-09-13T13:56:05Z"
+  generation: 1
+  name: logoutput-dep-persistent
+  namespace: exercises
+  resourceVersion: "11566"
+  uid: 2dbcbf46-edf0-42e5-b8f3-7775ef3e8039
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: logoutput
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: logoutput
+      namespace: exercises
+    spec:
+      containers:
+      - env:
+        - name: PORT
+          value: "3000"
+        image: melinadevops/log_output:v2
+        imagePullPolicy: IfNotPresent
+        name: logoutput
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: "2026-09-13T13:56:15Z"
+    lastUpdateTime: "2026-09-13T13:56:15Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2026-09-13T13:56:05Z"
+    lastUpdateTime: "2026-09-13T13:56:15Z"
+    message: ReplicaSet "logoutput-dep-persistent-6778d49fc8" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 1
+  readyReplicas: 1
+  replicas: 1
+  terminatingReplicas: 0
+  updatedReplicas: 1

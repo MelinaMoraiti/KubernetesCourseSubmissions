@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"pingpong-dep-persistent","namespace":"exercises"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"pingpong"}},"template":{"metadata":{"labels":{"app":"pingpong"},"namespace":"exercises"},"spec":{"containers":[{"env":[{"name":"PORT","value":"9000"}],"image":"melinadevops/pingpong:latest","name":"pingpong"}]}}}}
+  creationTimestamp: "2026-09-13T13:49:03Z"
+  generation: 1
+  name: pingpong-dep-persistent
+  namespace: exercises
+  resourceVersion: "11282"
+  uid: c7011ee6-a0c3-4bde-9b9a-b99e5b819b40
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: pingpong
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: pingpong
+      namespace: exercises
+    spec:
+      containers:
+      - env:
+        - name: PORT
+          value: "9000"
+        image: melinadevops/pingpong:latest
+        imagePullPolicy: Always
+        name: pingpong
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: "2026-09-13T13:49:11Z"
+    lastUpdateTime: "2026-09-13T13:49:11Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2026-09-13T13:49:03Z"
+    lastUpdateTime: "2026-09-13T13:49:11Z"
+    message: ReplicaSet "pingpong-dep-persistent-66588c698f" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 1
+  readyReplicas: 1
+  replicas: 1
+  terminatingReplicas: 0
+  updatedReplicas: 1
