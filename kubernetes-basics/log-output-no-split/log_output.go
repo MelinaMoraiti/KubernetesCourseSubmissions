@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 	"time"
-    "github.com/joho/godotenv"
+ //   "github.com/joho/godotenv"
 )
 const counterFile = "/usr/src/app/files/counter.txt"
 
@@ -36,10 +36,11 @@ func fetchPings(pingsURL string) string {
 }
 
 func main() {
-    if err := godotenv.Load(); err != nil {
+/*
+    if err := godotenv.Load(".env"); err != nil {
         fmt.Println("Warning: .env file not found")
     }
-
+*/
 	const charset = "abcdefghijklmnopqrstuvwxyz" +
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" +
 		"@#!$%^&*()-+=_~`}{][|\\><?"
@@ -47,6 +48,12 @@ func main() {
 	// Read port from environment variable (default 8080)
 	port := os.Getenv("PORT")
     ping_pong_host := os.Getenv("PING_PONG_APP_HOST")
+    message := os.Getenv("MESSAGE")
+    fileContent, err := os.ReadFile("/etc/config/information.txt")
+    if err != nil {
+    	fmt.Println("Could not read information.txt:", err)
+    	return
+    }
 	// Generated once at startup
 	randomString := generateRandomString(36, charset)
 
@@ -57,7 +64,9 @@ func main() {
         timestamp := time.Now().UTC().Format(time.RFC3339Nano)
 		fmt.Fprintf(
 			w,
-			"%s: %s.\n%s",
+			"file content: %senv variable: MESSAGE=%s\n%s: %s.\n%s",
+			string(fileContent),
+			message,
 			timestamp,
 			randomString,
 			pings,
