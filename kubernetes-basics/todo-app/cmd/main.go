@@ -12,9 +12,11 @@ import (
 func main() {
 	_ = godotenv.Load()
     // Define cache parameters for Picsum image
-	imagePath := "/usr/src/app/images/current.jpg"
-	imageURL := "https://picsum.photos/1200"
-	cacheDuration := 10 * time.Minute
+	imagePath :=  os.Getenv("STORED_IMAGES_PATH") + "current.jpg"
+	imageURL := os.Getenv("IMAGE_URL")
+
+	cacheDurationString := os.Getenv("IMAGE_CACHE_DURATION")
+	cacheDuration, err := time.ParseDuration(cacheDurationString)
 
 	if err := utils.CacheImage(imagePath, imageURL, cacheDuration); err != nil {
     	log.Printf("Warning: Failed to initial cache image: %v", err)

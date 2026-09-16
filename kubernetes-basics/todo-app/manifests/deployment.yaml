@@ -20,11 +20,9 @@ spec:
       containers:
         - name: todo-app
           image: melinadevops/todo-app
-          env:
-            - name: PORT
-              value: "8000"
-            - name: TODO_BACKEND_URL
-              value: "http://todo-backend-svc:2428"
+          envFrom:
+            - configMapRef:
+                name: todo-app-config
           volumeMounts:
             - name: images
               mountPath: /usr/src/app/images
