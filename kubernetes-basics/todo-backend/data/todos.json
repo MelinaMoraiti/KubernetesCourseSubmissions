@@ -53,5 +53,10 @@
     "id": 11,
     "task": "Create Backup",
     "done": false
+  },
+  {
+    "id": 12,
+    "task": "Registration for fullbright scholarship",
+    "done": false
   }
 ]
