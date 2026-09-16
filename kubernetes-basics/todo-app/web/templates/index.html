@@ -8,58 +8,71 @@
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/style.css">
 </head>
-<body class="container max-w-xl mx-auto">
+<body class="container max-w-5xl mx-auto px-4">
+
 <h1 class="font-bold text-4xl my-8 text-center">ToDo App</h1>
 
-<img src="/images/current.jpg"
-     alt="Random Banner"
-     class="w-full h-48 object-cover rounded-xl my-6"
-      />
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
 
-    <form
-        id="todoForm"
-        class="flex gap-2 my-6"
-        hx-post="/todos"
-        hx-trigger="submit"
-        hx-target="#todo-list"
-        hx-swap="innerHTML"
-    >
-    <input
-            id="todoInput"
-            type="text"
-            name="todo"
-            maxlength="140"
-            placeholder="Enter a new todo (max 140 characters)"
-            class="input input-bordered w-full"
-            required
-    />
-    <button class="btn btn-primary">
-        Create todo
-    </button>
-</form>
-
-<div class="card bg-base-100 shadow-xl border border-base-300 p-6">
-    <h2 class="text-xl font-bold text-base-content mb-4 flex items-center justify-between">
-        <span>To-Do Items</span>
-    </h2>
-
-    <div id="todo-list" class="space-y-3">
-        {{ block "Todos" . }}
-        {{ if . }}
-        {{ range . }}
-        <div class="flex items-center justify-between p-3 rounded-lg bg-base-200/50 hover:bg-base-200 transition-colors border border-base-300/50">
-            <span class="text-base break-all pr-4 {{if .Done}} line-through text-base-content/40 {{else}} text-base-content {{end}}">
-                {{ .Task }}
-            </span>
-        </div>
-        {{ end }}
-        {{ else }}
-        <div class="text-center py-8 text-base-content/50">
-            <p>No tasks yet! Add one above.</p>
-        </div>
-        {{ end }}
-        {{ end }}
+    <!-- Left side: Image -->
+    <div>
+        <img
+                src="/images/current.jpg"
+                alt="Random Banner"
+                class="w-full h-full object-cover rounded-xl"
+        />
     </div>
+
+    <!-- Right side: Todos -->
+    <div>
+        <form
+                id="todoForm"
+                class="flex gap-2 mb-6"
+                hx-post="/todos"
+                hx-trigger="submit"
+                hx-target="#todo-list"
+                hx-swap="innerHTML"
+        >
+            <input
+                    id="todoInput"
+                    type="text"
+                    name="todo"
+                    maxlength="140"
+                    placeholder="Enter a new todo (max 140 characters)"
+                    class="input input-bordered w-full"
+                    required
+            />
+
+            <button class="btn btn-primary">
+                Create todo
+            </button>
+        </form>
+
+        <div class="card bg-base-100 shadow-xl border border-base-300 p-6">
+            <h2 class="text-xl font-bold text-base-content mb-4 flex items-center justify-between">
+                <span>To-Do Items</span>
+            </h2>
+
+            <div id="todo-list" class="space-y-3">
+                {{ block "Todos" . }}
+                {{ if . }}
+                {{ range . }}
+                <div class="flex items-center justify-between p-3 rounded-lg bg-base-200/50 hover:bg-base-200 transition-colors border border-base-300/50">
+                            <span class="text-base break-all pr-4 {{if .Done}} line-through text-base-content/40 {{else}} text-base-content {{end}}">
+                                {{ .Task }}
+                            </span>
+                </div>
+                {{ end }}
+                {{ else }}
+                <div class="text-center py-8 text-base-content/50">
+                    <p>No tasks yet! Add one above.</p>
+                </div>
+                {{ end }}
+                {{ end }}
+            </div>
+        </div>
+    </div>
+
 </div>
 
 </body>
