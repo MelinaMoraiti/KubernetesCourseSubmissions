@@ -23,7 +23,7 @@ func RegisterRoutes() http.Handler {
 	r.Handle("/images/*",
         http.StripPrefix("/images/",
             http.FileServer(http.Dir(os.Getenv("STORED_IMAGES_PATH"))),
-        ),d
+        ),
     )
 
 	r.Get("/", indexHandler)
