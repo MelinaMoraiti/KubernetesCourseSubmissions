@@ -18,4 +18,15 @@ spec:
           image: melinadevops/todo-backend
           env:
             - name: PORT
-              value: "9000"
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-backend-config
+                  key: PORT
+          volumeMounts:
+            - name: config
+              mountPath: "/config"
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: todo-backend-config

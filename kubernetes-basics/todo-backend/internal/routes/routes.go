@@ -14,12 +14,7 @@ import (
 func RegisterRoutes() http.Handler {
 
 	r := chi.NewRouter()
-    r.Use(cors.Handler(cors.Options{
-        AllowedOrigins:   []string{"http://localhost:8000"},
-        AllowedMethods:   []string{"GET", "POST"},
-        AllowedHeaders:   []string{"Accept", "Content-Type", "X-CSRF-Token"},
-        AllowCredentials: true,
-    }))
+
 	r.Use(middleware.Logger)
 
 	r.Get("/todos", readTodosHandler)
