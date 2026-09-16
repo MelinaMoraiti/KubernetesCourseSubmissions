@@ -5,6 +5,7 @@ import (
 
 	"todo-app/internal/server"
     "time"
+    "os"
 	"github.com/joho/godotenv"
 	"todo-app/internal/utils"
 )
@@ -16,7 +17,7 @@ func main() {
 	imageURL := os.Getenv("IMAGE_URL")
 
 	cacheDurationString := os.Getenv("IMAGE_CACHE_DURATION")
-	cacheDuration, err := time.ParseDuration(cacheDurationString)
+	cacheDuration, _ := time.ParseDuration(cacheDurationString)
 
 	if err := utils.CacheImage(imagePath, imageURL, cacheDuration); err != nil {
     	log.Printf("Warning: Failed to initial cache image: %v", err)
