@@ -1,6 +1,6 @@
 # Exercises
 
-## Chapter 2 
+## Chapter 2: Kubernetes Basics 
 
 - **Exercise 1.1:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/1.1)
   
@@ -27,7 +27,9 @@
 - **Exercise 1.12:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/1.12)
   
 - **Exercise 1.13:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/1.13)
-  
+
+## Chapter 3: More building Blocks
+
 - **Exercise 2.1:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/2.1)
   
 - **Exercise 2.2:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/2.2)
@@ -39,3 +41,5 @@
 - **Exercise 2.5:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/2.5)
 
 - **Exercise 2.6:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/2.6)
+- 
+- **Exercise 2.7:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/2.7)
