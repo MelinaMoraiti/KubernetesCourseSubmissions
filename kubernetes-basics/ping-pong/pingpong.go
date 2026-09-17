@@ -1,16 +1,19 @@
 package main
 
 import (
+    "context"
 	"fmt"
 	"net/http"
 	"os"
 	"sync"
 	"github.com/joho/godotenv"
+	"github.com/jackc/pgx/v5"
 )
 
 var (
 	numOfRequests int
 	mu      sync.Mutex
+	db      *pgx.Conn
 )
 
 const filename = "/counter.txt"
@@ -39,7 +42,49 @@ func writeToFile(file *os.File, format string, a ...interface{}) {
 
 	file.Sync()
 }
+func connectToDB(databaseURL string) error {
+	var err error
 
+	db, err = pgx.Connect(context.Background(), databaseURL)
+	if err != nil {
+		return fmt.Errorf("failed to connect to database: %w", err)
+	}
+
+	if err := db.Ping(context.Background()); err != nil {
+		return fmt.Errorf("failed to ping database: %w", err)
+	}
+
+	return nil
+}
+
+// Loads the current counter value from the database.
+func loadCounterFromDB() error {
+	err := db.QueryRow(
+		context.Background(),
+		"SELECT value FROM counter WHERE id = 1",
+	).Scan(&numOfRequests)
+
+	if err != nil {
+		return fmt.Errorf("failed to load counter: %w", err)
+	}
+
+	return nil
+}
+
+// Saves the provided counter value to the database.
+func saveCounterToDB(counter int) error {
+	_, err := db.Exec(
+		context.Background(),
+		"UPDATE counter SET value = $1 WHERE id = 1",
+		counter,
+	)
+
+	if err != nil {
+		return fmt.Errorf("failed to save counter: %w", err)
+	}
+
+	return nil
+}
 func main() {
     if err := godotenv.Load(); err != nil {
         fmt.Println("Warning: .env file not found")
@@ -49,7 +94,24 @@ func main() {
 	if port == "" {
 		port = "9000"
 	}
+	databaseURL := os.Getenv("DATABASE_URL")
+	if databaseURL == "" {
+		fmt.Println("DATABASE_URL is not set")
+		return
+	}
 
+	// Connect to PostgreSQL.
+	if err := connectToDB(databaseURL); err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer db.Close(context.Background())
+
+	// Load the persisted counter.
+	if err := loadCounterFromDB(); err != nil {
+		fmt.Println(err)
+		return
+	}
 	// Open counter file once
 	counterFileHandle, err := createFile(filename)
 	if err != nil {
@@ -68,7 +130,10 @@ func main() {
 		mu.Lock()
 
 		numOfRequests++
-
+		if err := saveCounterToDB(numOfRequests); err != nil {
+			http.Error(w, "Failed to save counter", http.StatusInternalServerError)
+			return
+		}
 		// Save updated counter
 		writeToFile(counterFileHandle, "%d\n", numOfRequests)
 
