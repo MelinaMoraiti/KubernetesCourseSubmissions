@@ -4,3 +4,5 @@ metadata:
   name: todo-backend-config
 data:
   PORT: "9000"
+  REDIS_HOST: "redis-svc"
+  REDIS_PORT: "6379"

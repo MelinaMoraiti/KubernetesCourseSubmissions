@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis-ss
+spec:
+  serviceName: redis-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-ss
+  template:
+    metadata:
+      namespace: project
+      labels:
+        app: redis-ss
+    spec:
+      containers:
+        - name: redis-container
+          image: redis:7-alpine
+          command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - name: redis-config
+              mountPath: /usr/local/etc/redis/redis.conf
+              subPath: redis.conf
+            - name: redis-data-storage
+              mountPath: /data
+      volumes:
+        - name: redis-config
+          configMap:
+            name: todo-redis-config
+  volumeClaimTemplates:
+    - metadata:
+        name: redis-data-storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 100Mi
