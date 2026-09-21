@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: create-todo
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: create-todo
+              image: melinadevops/create-todo
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: REDIS_HOST
+                  value: "redis-svc"
+                - name: REDIS_PORT
+                  value: "6379"
+                - name: TASK_NAME
+                  value: "Read https://el.wikipedia.org/wiki/Special:Random"
+          restartPolicy: OnFailure
