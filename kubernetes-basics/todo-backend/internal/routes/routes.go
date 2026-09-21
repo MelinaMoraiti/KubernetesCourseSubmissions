@@ -6,24 +6,28 @@ import (
 	"encoding/json"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"todo-backend/internal/utils"
+	"todo-backend/internal/repository"
 	"todo-backend/internal/models"
-	"github.com/go-chi/cors"
 )
 
-func RegisterRoutes() http.Handler {
-
+func RegisterRoutes(todoRepository repository.TodoRepository) http.Handler {
 	r := chi.NewRouter()
 
 	r.Use(middleware.Logger)
 
-	r.Get("/todos", readTodosHandler)
-	r.Post("/todos", createTodosHandler)
+	r.Get("/todos", func(w http.ResponseWriter, r *http.Request) {
+		readTodosHandler(w, r, todoRepository)
+	})
+
+	r.Post("/todos", func(w http.ResponseWriter, r *http.Request) {
+		createTodosHandler(w, r, todoRepository)
+	})
+
 	return r
 }
 
-func readTodosHandler(w http.ResponseWriter, r *http.Request) {
-	todos, err := utils.FetchAllTodosFromJSON("data/todos.json")
+func readTodosHandler(w http.ResponseWriter, r *http.Request, todoRepository repository.TodoRepository,) {
+	todos, err := todoRepository.FetchAllTodos()
 	if err != nil {
 		log.Printf("Could not get all todos: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -41,7 +45,7 @@ func readTodosHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Could not encode todos: %v", err)
 	}
 }
-func createTodosHandler(w http.ResponseWriter, r *http.Request) {
+func createTodosHandler(w http.ResponseWriter, r *http.Request,todoRepository repository.TodoRepository,) {
     err := r.ParseForm()
 	if err != nil {
 		http.Error(w, "Invalid form data", http.StatusBadRequest)
@@ -62,7 +66,7 @@ func createTodosHandler(w http.ResponseWriter, r *http.Request) {
     }
 
     // Append todo to JSON file
-    _, err2 := utils.AppendNewTodoInJSON("data/todos.json", todo)
+    _, err2 := todoRepository.CreateTodo(todo)
     if err2 != nil {
         log.Printf("Could not create todo: %v", err2)
         http.Error(w, "Internal Server Error", http.StatusInternalServerError)

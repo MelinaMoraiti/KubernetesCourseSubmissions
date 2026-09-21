@@ -6,56 +6,36 @@
   },
   {
     "id": 2,
-    "task": "Make an appointment with an ophthalmologist",
+    "task": "Make LinkedIn Account",
     "done": true
   },
   {
     "id": 3,
-    "task": "Make LinkedIn Account",
-    "done": false
-  },
-  {
-    "id": 4,
     "task": "Research market for new laptop",
     "done": false
   },
   {
-    "id": 5,
+    "id": 4,
     "task": "Improve my CV using Canvas",
     "done": false
   },
   {
-    "id": 6,
+    "id": 5,
     "task": "Install Ubuntu",
     "done": false
   },
   {
-    "id": 7,
-    "task": "Book an appointment to issue new identity card",
-    "done": true
-  },
-  {
-    "id": 8,
-    "task": "Book an appointment for nails therapy",
-    "done": true
-  },
-  {
-    "id": 9,
+    "id": 6,
     "task": "Book an appointment to assess autism",
     "done": false
   },
   {
-    "id": 10,
+    "id": 7,
     "task": "Register for tee exams",
     "done": false
   },
   {
-    "id": 11,
-    "task": "Create Backup",
-    "done": false
-  },
-  {
-    "id": 12,
+    "id": 8,
     "task": "Registration for fullbright scholarship",
     "done": false
   }
