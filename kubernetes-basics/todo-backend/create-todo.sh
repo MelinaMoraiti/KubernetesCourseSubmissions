@@ -12,7 +12,7 @@ ID=$(redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" INCR todo:next_id)
 # Create the todo
 redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" \
     SET "todo:$ID" \
-    "{\"id\":$ID,\"task\":\"$TASK\",\"done\":false}"
+    "{\"id\":$ID,\"task\":\"$TASK_NAME\",\"done\":false}"
 
 # Add the ID to the todos index
 redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" \
