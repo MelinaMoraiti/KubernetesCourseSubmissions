@@ -6,36 +6,21 @@
   },
   {
     "id": 2,
-    "task": "Make LinkedIn Account",
-    "done": true
-  },
-  {
-    "id": 3,
     "task": "Research market for new laptop",
     "done": false
   },
   {
-    "id": 4,
+    "id": 3,
     "task": "Improve my CV using Canvas",
     "done": false
   },
   {
+    "id": 4,
+    "task": "Book an appointment with psychiatrist for autism assessment",
+    "done": false
+  },
+  {
     "id": 5,
-    "task": "Install Ubuntu",
-    "done": false
-  },
-  {
-    "id": 6,
-    "task": "Book an appointment to assess autism",
-    "done": false
-  },
-  {
-    "id": 7,
-    "task": "Register for tee exams",
-    "done": false
-  },
-  {
-    "id": 8,
     "task": "Registration for fullbright scholarship",
     "done": false
   }
