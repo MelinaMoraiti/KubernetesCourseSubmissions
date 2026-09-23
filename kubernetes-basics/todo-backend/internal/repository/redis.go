@@ -162,14 +162,16 @@ func (r *RedisTodoRepository) CreateTodo(todo models.Todo) (models.Todo, error) 
 	if err != nil {
 		return models.Todo{}, fmt.Errorf("failed to generate todo ID: %w", err)
 	}
-
+	if len([]rune(todo.Task))> 140 {
+		return models.Todo{}, fmt.Errorf("task is too long! %w", err)
+	}
 	todo.ID = uint64(id)
 
 	data, err := json.Marshal(todo)
 	if err != nil {
 		return models.Todo{}, fmt.Errorf("failed to encode todo: %w", err)
 	}
-
+	
 	key := fmt.Sprintf("todo:%d", todo.ID)
 
 	err = r.client.Set(ctx, key, data, 0).Err()
