@@ -49,3 +49,7 @@
 - **Exercise 2.9:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/2.9)
 
 - **Exercise 2.10:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/2.10)
+
+## Chapter 4: To the cloud
+
+- **Exercise 3.1:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/3.1)
