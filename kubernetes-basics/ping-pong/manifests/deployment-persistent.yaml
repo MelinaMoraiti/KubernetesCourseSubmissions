@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pingpong-dep-persistent
+  name: pingpong-dep
 spec:
   replicas: 1
   selector:
