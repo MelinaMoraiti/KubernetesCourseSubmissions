@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: pingpong-svc
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app: pingpong
   ports:
-    - port: 2426
+    - port: 80
       protocol: TCP
       targetPort: 9000
