@@ -1,19 +1,20 @@
 package main
 
 import (
-    "context"
+	"context"
 	"fmt"
 	"net/http"
 	"os"
 	"sync"
-	"github.com/joho/godotenv"
+
 	"github.com/jackc/pgx/v5"
+	"github.com/joho/godotenv"
 )
 
 var (
 	numOfRequests int
-	mu      sync.Mutex
-	db      *pgx.Conn
+	mu            sync.Mutex
+	db            *pgx.Conn
 )
 
 const filename = "/counter.txt"
@@ -86,9 +87,9 @@ func saveCounterToDB(counter int) error {
 	return nil
 }
 func main() {
-    if err := godotenv.Load(); err != nil {
-        fmt.Println("Warning: .env file not found")
-    }
+	if err := godotenv.Load(); err != nil {
+		fmt.Println("Warning: .env file not found")
+	}
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -119,8 +120,8 @@ func main() {
 		return
 	}
 	defer counterFileHandle.Close()
-    numOfRequests := 0
-    writeToFile(counterFileHandle, "%d\n", numOfRequests)
+	numOfRequests := 0
+	writeToFile(counterFileHandle, "%d\n", numOfRequests)
 	http.HandleFunc("/pingpong", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/pingpong" {
 			http.NotFound(w, r)
@@ -140,6 +141,14 @@ func main() {
 		mu.Unlock()
 
 		fmt.Fprintf(w, "Ping / Pongs: %d", numOfRequests)
+	})
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" {
+			http.NotFound(w, r)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, "Ping / Pongs application is running")
 	})
 	http.HandleFunc("/pings", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/pings" {
