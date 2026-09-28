@@ -55,3 +55,5 @@
 - **Exercise 3.1:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/3.1)
 
 - **Exercise 3.2:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/3.2)
+
+- **Exercise 3.3:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/3.3)
