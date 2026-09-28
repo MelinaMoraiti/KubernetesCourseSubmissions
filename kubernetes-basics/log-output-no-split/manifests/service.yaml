@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: logoutput-svc
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: logoutput
   ports:
-    - port: 2425
+    - port: 80
       protocol: TCP
       targetPort: 3000

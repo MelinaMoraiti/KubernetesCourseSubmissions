@@ -1,0 +1,9 @@
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: pingpong-backendconfig
+spec:
+  healthCheck:
+    type: HTTP
+    requestPath: /pings
+    port: 9000
