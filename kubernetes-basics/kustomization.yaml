@@ -1,0 +1,18 @@
+# kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - todo-backend/manifests/configmap.yaml
+  - todo-backend/manifests/cronjob.yaml
+  - todo-backend/manifests/deployment.yaml
+  - todo-backend/manifests/service.yaml
+  - todo-backend/manifests/redis-configmap.yaml
+  - todo-backend/manifests/redis-svc.yaml
+  - todo-backend/manifests/statefulset.yaml
+
+  - todo-app/manifests/configmap.yaml
+  - todo-app/manifests/deployment.yaml
+  - todo-app/manifests/gateway.yaml
+  - todo-app/manifests/service.yaml
+  - todo-app/manifests/persistentvolumeclaim.yaml
+  - todo-app/manifests/route.yaml
