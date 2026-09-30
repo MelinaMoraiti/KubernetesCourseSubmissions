@@ -1,19 +1,23 @@
 package routes
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
-	"encoding/json"
+	"todo-backend/internal/models"
+	"todo-backend/internal/repository"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"todo-backend/internal/repository"
-	"todo-backend/internal/models"
 )
 
 func RegisterRoutes(todoRepository repository.TodoRepository) http.Handler {
 	r := chi.NewRouter()
 
 	r.Use(middleware.Logger)
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
 
 	r.Get("/todos", func(w http.ResponseWriter, r *http.Request) {
 		readTodosHandler(w, r, todoRepository)
@@ -26,7 +30,7 @@ func RegisterRoutes(todoRepository repository.TodoRepository) http.Handler {
 	return r
 }
 
-func readTodosHandler(w http.ResponseWriter, r *http.Request, todoRepository repository.TodoRepository,) {
+func readTodosHandler(w http.ResponseWriter, r *http.Request, todoRepository repository.TodoRepository) {
 	todos, err := todoRepository.FetchAllTodos()
 	if err != nil {
 		log.Printf("Could not get all todos: %v", err)
@@ -45,34 +49,34 @@ func readTodosHandler(w http.ResponseWriter, r *http.Request, todoRepository rep
 		log.Printf("Could not encode todos: %v", err)
 	}
 }
-func createTodosHandler(w http.ResponseWriter, r *http.Request,todoRepository repository.TodoRepository,) {
-    err := r.ParseForm()
+func createTodosHandler(w http.ResponseWriter, r *http.Request, todoRepository repository.TodoRepository) {
+	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, "Invalid form data", http.StatusBadRequest)
 		return
 	}
-    // Get form value
-    task := r.FormValue("todo")
+	// Get form value
+	task := r.FormValue("todo")
 
-    if task == "" {
-        http.Error(w, "Task cannot be empty", http.StatusBadRequest)
-        return
-    }
+	if task == "" {
+		http.Error(w, "Task cannot be empty", http.StatusBadRequest)
+		return
+	}
 
-    // Create new todo
-    todo := models.Todo{
-        Task: task,
-        Done: false,
-    }
+	// Create new todo
+	todo := models.Todo{
+		Task: task,
+		Done: false,
+	}
 
-    // Append todo to JSON file
-    _, err2 := todoRepository.CreateTodo(todo)
-    if err2 != nil {
-        log.Printf("Could not create todo: %v", err2)
-        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-        return
-    }
+	// Append todo to JSON file
+	_, err2 := todoRepository.CreateTodo(todo)
+	if err2 != nil {
+		log.Printf("Could not create todo: %v", err2)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 
-    w.WriteHeader(http.StatusCreated)
-    w.Write([]byte("Todo created successfully"))
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte("Todo created successfully"))
 }
