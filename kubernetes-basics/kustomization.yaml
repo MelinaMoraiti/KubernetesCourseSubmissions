@@ -16,3 +16,6 @@ resources:
   - todo-app/manifests/service.yaml
   - todo-app/manifests/persistentvolumeclaim.yaml
   - todo-app/manifests/route.yaml
+images:
+  - name: melinadevops/todo-backend
+  - name: melinadevops/todo-app
