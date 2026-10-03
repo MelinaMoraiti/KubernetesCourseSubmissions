@@ -4,6 +4,8 @@ metadata:
   name: todo-app-dep
 spec:
   replicas: 1
+  strategy:
+    type: Recreate        # old pod is stopped before the new one starts
   selector:
     matchLabels:
       app: todo-app
