@@ -73,3 +73,9 @@ jobs:
           kubectl rollout status deployment/todo-backend-dep --timeout=180s
           kubectl rollout status deployment/todo-app-dep --timeout=180s
           kubectl get services -o wide
+      - name: Debug on failure
+        if: failure()
+        run: |
+          kubectl get pods
+          kubectl describe pods -l app=todo-backend
+          kubectl logs -l app=todo-backend --tail=50
