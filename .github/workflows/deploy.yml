@@ -16,8 +16,8 @@ env:
   REPOSITORY: my-repository
   BACKEND_IMAGE: todo-backend
   FRONTEND_IMAGE: todo-app
-  SERVICE: todo-backend
   BRANCH: ${{ github.ref_name }}
+  NAMESPACE: ${{ github.ref_name == 'main' && 'project' || github.ref_name }}
 
 jobs:
   build-publish-deploy:
@@ -69,9 +69,11 @@ jobs:
       - name: Deploy
         working-directory: kubernetes-basics
         run: |-
+          kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
+          kustomize edit set namespace $NAMESPACE 
           kustomize edit set image melinadevops/todo-backend=$BACKEND_TAG
           kustomize edit set image melinadevops/todo-app=$APP_TAG
-          kustomize build . | kubectl apply -f -
-          kubectl rollout status deployment/todo-backend-dep --timeout=180s
-          kubectl rollout status deployment/todo-app-dep --timeout=180s
-          kubectl get services -o wide
+          kustomize build . | kubectl apply -n $NAMESPACE -f -
+          kubectl rollout status deployment/todo-backend-dep -n $NAMESPACE --timeout=180s
+          kubectl rollout status deployment/todo-app-dep -n $NAMESPACE --timeout=180s
+          kubectl get services,gateway -n $NAMESPACE -o wide
