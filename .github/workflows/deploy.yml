@@ -14,7 +14,8 @@ env:
   GKE_ZONE: europe-west8-c
   REGISTRY: europe-west8-docker.pkg.dev
   REPOSITORY: my-repository
-  IMAGE: todo-backend
+  BACKEND_IMAGE: todo-backend
+  FRONTEND_IMAGE: todo-app
   SERVICE: todo-backend
   BRANCH: ${{ github.ref_name }}
 
@@ -44,13 +45,14 @@ jobs:
 
       - uses: google-github-actions/get-gke-credentials@v3
         with:
-          cluster_name: ${{ env.GKE_CLUSTER }}
-          location: ${{ env.GKE_ZONE }}
+          cluster_name: '${{ env.GKE_CLUSTER }}'
+          project_id: '${{ env.PROJECT_ID }}'
+          location: '${{ env.GKE_ZONE }}'
 
       - name: Form the image names
         run: |
-          echo "BACKEND_TAG=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-backend:$BRANCH-$GITHUB_SHA" >> $GITHUB_ENV
-          echo "APP_TAG=$REGISTRY/$PROJECT_ID/$REPOSITORY/todo-app:$BRANCH-$GITHUB_SHA" >> $GITHUB_ENV
+          echo "BACKEND_TAG=$REGISTRY/$PROJECT_ID/$REPOSITORY/$BACKEND_IMAGE:$BRANCH-$GITHUB_SHA" >> $GITHUB_ENV
+          echo "APP_TAG=$REGISTRY/$PROJECT_ID/$REPOSITORY/$FRONTEND_IMAGE:$BRANCH-$GITHUB_SHA" >> $GITHUB_ENV
 
       - name: Build
         run: |
@@ -65,17 +67,11 @@ jobs:
       - uses: imranismail/setup-kustomize@v3
 
       - name: Deploy
+        working-directory: kubernetes-basics
         run: |-
-          cd kubernetes-basics
           kustomize edit set image melinadevops/todo-backend=$BACKEND_TAG
           kustomize edit set image melinadevops/todo-app=$APP_TAG
           kustomize build . | kubectl apply -f -
           kubectl rollout status deployment/todo-backend-dep --timeout=180s
           kubectl rollout status deployment/todo-app-dep --timeout=180s
           kubectl get services -o wide
-      - name: Debug on failure
-        if: failure()
-        run: |
-          kubectl get pods
-          kubectl describe pods -l app=todo-backend
-          kubectl logs -l app=todo-backend --tail=50
