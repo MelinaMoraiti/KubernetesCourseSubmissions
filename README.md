@@ -67,3 +67,33 @@
 - **Exercise 3.7:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/3.7)
 
 - **Exercise 3.8:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/3.8)
+
+# DBaaS vs Self-Managed Database on GKE (PVC)
+
+Currently runs a self managed Redis. We compare this solution with a self-managed service such as Google Memorystore. 
+
+## Pros/Cons Comparison
+
+**1. Initial Setup**
+
+Self-managed DB: Needs more work, in general. In our case Redis is already set-up so there is nothing to do.
+
+DBaaS: Needs less work in general. With Google Memorystore you can deploy instances in a few clicks from the console, the CLI or client libraries. You then have to repoint your connection strings.
+
+**2. Costs**
+
+Self-managed DB: The infrastructure is cheaper.
+
+DBaaS: Cost is generally higher depends on the configuration
+
+**3. Ongoing Maintenance**
+
+Self-managed DB: Maintenance is more difficult, because is managed by you.
+
+DBaaS: Maintenance is easier, because is managed by the provider.
+
+**4. Backups and Restore**
+
+Self-managed DB: Backups are capable but require manual setup and tests.
+
+DBaaS: For most database solutions backups are built-in and offer simple recovery mechanisms. Cloud SQL backups are automated by default and restores are a command like gcloud sql backups restore, and Memorystore can automate backups
