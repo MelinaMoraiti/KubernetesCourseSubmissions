@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: redis-backup
+  # namespace: default   # must match where storage-sa-key was created
+spec:
+  schedule: "0 22 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 600
+      template:
+        spec:
+          restartPolicy: OnFailure
+          volumes:
+            - name: gcs-key
+              secret:
+                secretName: storage-sa-key
+          containers:
+            - name: backup
+              image: melinadevops/redis-backup:1.2
+              env:
+                - name: REDIS_HOST
+                  value: redis-svc          # your Redis Service name
+                - name: BUCKET
+                  value: dwk-gke-509916-redis-backups 
+              volumeMounts:
+                - name: gcs-key
+                  mountPath: /secrets
+                  readOnly: true
