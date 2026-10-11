@@ -1,1 +1,8 @@
 .idea
+key.json
+*.key.json
+private-key.json
+*-sa-key.json
+.secrets/
+*.pem
+.env
