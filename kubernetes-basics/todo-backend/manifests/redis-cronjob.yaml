@@ -14,20 +14,13 @@ spec:
       activeDeadlineSeconds: 600
       template:
         spec:
+          serviceAccountName: redis-backup
           restartPolicy: OnFailure
-          volumes:
-            - name: gcs-key
-              secret:
-                secretName: storage-sa-key
           containers:
             - name: backup
               image: melinadevops/redis-backup:1.2
               env:
                 - name: REDIS_HOST
-                  value: redis-svc          # your Redis Service name
+                  value: redis-svc.project.svc.cluster.local 
                 - name: BUCKET
                   value: dwk-gke-509916-redis-backups 
-              volumeMounts:
-                - name: gcs-key
-                  mountPath: /secrets
-                  readOnly: true
