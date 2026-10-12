@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: redis-backup
 spec:
-  schedule: "0 15 * * *"
+  schedule: "0 16 * * *"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
