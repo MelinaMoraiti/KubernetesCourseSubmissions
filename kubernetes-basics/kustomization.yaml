@@ -7,6 +7,7 @@ resources:
   - todo-backend/manifests/deployment.yaml
   - todo-backend/manifests/service.yaml
   - todo-backend/manifests/redis-configmap.yaml
+  - todo-backend/manifests/redis-cronjob.yaml
   - todo-backend/manifests/redis-svc.yaml
   - todo-backend/manifests/statefulset.yaml
 
