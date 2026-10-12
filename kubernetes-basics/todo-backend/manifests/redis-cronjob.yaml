@@ -2,9 +2,8 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: redis-backup
-  # namespace: default   # must match where storage-sa-key was created
 spec:
-  schedule: "0 14 * * *"
+  schedule: "0 15 * * *"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
