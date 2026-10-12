@@ -70,6 +70,7 @@
 
 - **Exercise 3.9:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/3.9)
 
+- **Exercise 3.10:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/3.10)
 
 # DBaaS vs Self-Managed Database on GKE (PVC)
 
