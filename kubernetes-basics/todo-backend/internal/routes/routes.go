@@ -76,7 +76,8 @@ func createTodosHandler(w http.ResponseWriter, r *http.Request, todoRepository r
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
+	log.Printf("Todo: %s created successfully", todo.Task)
 
 	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte("Todo created successfully"))
+	//w.Write([]byte("Todo created successfully"))
 }
