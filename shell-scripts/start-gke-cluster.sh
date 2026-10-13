@@ -7,7 +7,7 @@ ZONE="europe-west8-c"
 K8S_VERSION="1.36"
 DISK_SIZE="32"
 NUM_NODES="4"
-MACHINE_TYPE="e2-small"
+MACHINE_TYPE="e2-medium"
 
 echo "Creating GKE cluster: ${CLUSTER_NAME}..."
 
