@@ -28,3 +28,10 @@ spec:
           volumeMounts:
             - name: images
               mountPath: /usr/src/app/images
+          resources:
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
+            requests:
+              cpu: "25m"
+              memory: "32Mi"
