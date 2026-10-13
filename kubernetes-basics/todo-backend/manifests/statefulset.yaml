@@ -22,7 +22,13 @@ spec:
       containers:
         - name: redis-container
           image: redis:7-alpine
-
+          resources:
+            limits:
+              cpu: 200m
+              memory: 128Mi
+            requests:
+              cpu: 25m
+              memory: 32Mi
           command:
             - redis-server
             - /usr/local/etc/redis/redis.conf
