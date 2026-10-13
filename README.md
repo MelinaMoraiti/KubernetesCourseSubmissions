@@ -74,6 +74,8 @@
 
 - **Exercise 3.11:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/3.11)
 
+- **Exercise 3.12:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/3.12)
+
 # DBaaS vs Self-Managed Database on GKE (PVC)
 
 Currently runs a self managed Redis. We compare this solution with a self-managed service such as Google Memorystore. 
