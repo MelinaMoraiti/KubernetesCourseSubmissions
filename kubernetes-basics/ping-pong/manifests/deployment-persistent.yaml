@@ -16,6 +16,13 @@ spec:
       containers:
         - name: pingpong
           image: melinadevops/pingpong:latest
+          readinessProbe:
+            initialDelaySeconds: 10 # Initial delay until the readiness is tested
+            periodSeconds: 5 # How often to test
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 9000
           env:
             - name: PORT
               value: "9000"
