@@ -27,4 +27,4 @@ spec:
             - name: PORT
               value: "9000"
             - name: DATABASE_URL
-              value: "postgres://postgres:testpassword@postgres-db-lb:5432/postgres"
+              value: "postgres://postgres:testpassword@postgres-db-lb:5432/postgres?sslmode=disable"
