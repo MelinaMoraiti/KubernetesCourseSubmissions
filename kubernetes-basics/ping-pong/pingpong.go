@@ -6,9 +6,13 @@ import (
 	"net/http"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
+
+	"github.com/hellofresh/health-go/v5"
+	healthPg "github.com/hellofresh/health-go/v5/checks/postgres"
 )
 
 var (
@@ -43,6 +47,7 @@ func writeToFile(file *os.File, format string, a ...interface{}) {
 
 	file.Sync()
 }
+
 func connectToDB(databaseURL string) error {
 	var err error
 
@@ -86,6 +91,7 @@ func saveCounterToDB(counter int) error {
 
 	return nil
 }
+
 func main() {
 	if err := godotenv.Load(); err != nil {
 		fmt.Println("Warning: .env file not found")
@@ -108,11 +114,42 @@ func main() {
 	}
 	defer db.Close(context.Background())
 
+	// Initialize health check instance with PostgreSQL checker
+	h, err := health.New(
+		health.WithComponent(health.Component{
+			Name:    "pingpong-service",
+			Version: "v1.0.0",
+		}),
+		health.WithSystemInfo(),
+	)
+	if err != nil {
+		fmt.Printf("Failed to initialize health check: %v\n", err)
+		return
+	}
+
+	// Register PostgreSQL database health check
+	err = h.Register(health.Config{
+		Name:      "postgres",
+		Timeout:   time.Second * 3,
+		SkipOnErr: false,
+		Check: healthPg.New(healthPg.Config{
+			DSN: databaseURL,
+		}),
+	})
+	if err != nil {
+		fmt.Printf("Failed to register postgres health check: %v\n", err)
+		return
+	}
+
+	// Map healthz endpoint to health-go handler
+	http.Handle("/healthz", h.Handler())
+
 	// Load the persisted counter.
 	if err := loadCounterFromDB(); err != nil {
 		fmt.Println(err)
 		return
 	}
+
 	// Open counter file once
 	counterFileHandle, err := createFile(filename)
 	if err != nil {
@@ -120,8 +157,10 @@ func main() {
 		return
 	}
 	defer counterFileHandle.Close()
-	numOfRequests := 0
+
+	numOfRequests = 0
 	writeToFile(counterFileHandle, "%d\n", numOfRequests)
+
 	http.HandleFunc("/pingpong", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/pingpong" {
 			http.NotFound(w, r)
@@ -129,19 +168,19 @@ func main() {
 		}
 
 		mu.Lock()
-
 		numOfRequests++
 		if err := saveCounterToDB(numOfRequests); err != nil {
+			mu.Unlock()
 			http.Error(w, "Failed to save counter", http.StatusInternalServerError)
 			return
 		}
 		// Save updated counter
 		writeToFile(counterFileHandle, "%d\n", numOfRequests)
-
 		mu.Unlock()
 
 		fmt.Fprintf(w, "Ping / Pongs: %d", numOfRequests)
 	})
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
 			http.NotFound(w, r)
@@ -150,6 +189,7 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintln(w, "Ping / Pongs application is running")
 	})
+
 	http.HandleFunc("/pings", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/pings" {
 			http.NotFound(w, r)
@@ -157,6 +197,7 @@ func main() {
 		}
 		fmt.Fprintf(w, "Ping / Pongs: %d", numOfRequests)
 	})
+
 	fmt.Printf("Listening on :%s\n", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		panic(err)
