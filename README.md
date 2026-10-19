@@ -76,7 +76,9 @@
 
 - **Exercise 3.12:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/3.12)
 
-- **Exercise 3.13:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/3.13)
+## Chapter 5: GitOps and friends
+
+- **Exercise 4.1:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/4.1)
 
 # DBaaS vs Self-Managed Database on GKE (PVC)
 
