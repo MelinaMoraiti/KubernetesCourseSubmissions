@@ -27,11 +27,14 @@ func RegisterRoutes() http.Handler {
     )
 
 	r.Get("/", indexHandler)
+	r.Get("/healthz", healthHandler)
 	r.Post("/todos", createTodoHandler)
 	return r
 }
 var todoBackendURL = os.Getenv("TODO_BACKEND_URL")
-
+func healthHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+}
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if todoBackendURL == "" {
 		log.Println("TODO_BACKEND_URL is not set")

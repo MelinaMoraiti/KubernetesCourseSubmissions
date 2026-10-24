@@ -71,8 +71,18 @@
                 {{ end }}
             </div>
         </div>
+        <div class="mt-6 flex items-center gap-4">
+            <button
+                class="btn btn-error btn-outline"
+                hx-post="/break"
+                hx-target="#break-status"
+                hx-swap="innerHTML"
+            >
+                Break app
+            </button>
+            <div id="break-status" class="text-sm">App is healthy</div>
+        </div>
     </div>
-
 </div>
 
 </body>

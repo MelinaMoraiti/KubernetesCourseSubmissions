@@ -22,6 +22,9 @@ spec:
       containers:
         - name: todo-app
           image: melinadevops/todo-app
+          ports:
+            - name: http-port
+              containerPort: 8000
           envFrom:
             - configMapRef:
                 name: todo-app-config
@@ -35,3 +38,12 @@ spec:
             requests:
               cpu: "25m"
               memory: "32Mi"
+          livenessProbe: 
+            initialDelaySeconds: 10
+            periodSeconds: 5 
+            httpGet:
+              path: /healthz
+              port: http-port 
+            timeoutSeconds: 2
+            failureThreshold: 1
+            successThreshold: 1 
