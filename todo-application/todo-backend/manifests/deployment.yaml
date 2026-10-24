@@ -15,7 +15,10 @@ spec:
     spec:
       containers:
         - name: todo-backend
-          image: melinadevops/todo-backend
+          image: melinadevops/todo-backend      
+          ports:
+            - name: http-port
+              containerPort: 3000
           env:
             - name: PORT
               valueFrom:
@@ -32,6 +35,15 @@ spec:
                 configMapKeyRef:
                   name: todo-backend-config
                   key: REDIS_PORT
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            httpGet:
+              path: /readyz
+              port: http-port
+            failureThreshold: 1   
+            successThreshold: 1
+            timeoutSeconds: 2
           resources:
             limits:
               cpu: "250m"
