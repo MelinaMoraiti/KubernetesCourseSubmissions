@@ -18,7 +18,7 @@ spec:
           image: melinadevops/todo-backend      
           ports:
             - name: http-port
-              containerPort: 3000
+              containerPort: 9000
           env:
             - name: PORT
               valueFrom:

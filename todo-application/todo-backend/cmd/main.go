@@ -5,18 +5,27 @@ import (
 
 	"todo-backend/internal/server"
 	"todo-backend/internal/repository"
-	"github.com/joho/godotenv"
+
+	"todo-backend/internal/config"
+
 )
 
 func main() {
-	_ = godotenv.Load()
-	redisRepository,_ := repository.NewRedisTodoRepository()
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatalf("invalid config: %v", err)
+	}
 
-	err := redisRepository.InitializeFromJSON("data/todos.json")
+	redisRepository,_ := repository.NewRedisTodoRepository(cfg.RedisAddr())
+
+	err = redisRepository.InitializeFromJSON("data/todos.json")
 	if err != nil {
 		log.Fatalf("Failed to initialize Redis: %v", err)
 	}
-	srv := server.NewServer()
+	srv, err  := server.NewServer()
+	if err != nil {
+		log.Fatalf("failed to start server: %v", err)
+	}
 	log.Printf("Server listening on %s", srv.Addr)
 
 	if err := srv.ListenAndServe(); err != nil {

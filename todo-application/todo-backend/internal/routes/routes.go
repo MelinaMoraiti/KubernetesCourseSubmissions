@@ -11,22 +11,21 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func RegisterRoutes(todoRepository repository.TodoRepository) http.Handler {
+func RegisterRoutes(todoRepository repository.TodoRepository, readyz http.Handler) http.Handler {
 	r := chi.NewRouter()
-
-	r.Use(middleware.Logger)
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
+	r.Handle("/readyz", readyz)
+	r.Group(func(r chi.Router) {
+		r.Use(middleware.Logger)
+		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		})
+		r.Get("/todos", func(w http.ResponseWriter, r *http.Request) {
+			readTodosHandler(w, r, todoRepository)
+		})
+		r.Post("/todos", func(w http.ResponseWriter, r *http.Request) {
+			createTodosHandler(w, r, todoRepository)
+		})
 	})
-
-	r.Get("/todos", func(w http.ResponseWriter, r *http.Request) {
-		readTodosHandler(w, r, todoRepository)
-	})
-
-	r.Post("/todos", func(w http.ResponseWriter, r *http.Request) {
-		createTodosHandler(w, r, todoRepository)
-	})
-
 	return r
 }
 

@@ -15,20 +15,10 @@ type RedisTodoRepository struct {
 	client *redis.Client
 }
 
-func NewRedisTodoRepository() (*RedisTodoRepository, error) {
-	host := os.Getenv("REDIS_HOST")
-	port := os.Getenv("REDIS_PORT")
-
-	if host == "" {
-		return nil, fmt.Errorf("REDIS_HOST is not set")
-	}
-
-	if port == "" {
-		return nil, fmt.Errorf("REDIS_PORT is not set")
-	}
+func NewRedisTodoRepository(redisAddr string) (*RedisTodoRepository, error) {
 
 	client := redis.NewClient(&redis.Options{
-		Addr: fmt.Sprintf("%s:%s", host, port),
+		Addr: redisAddr,
 	})
 
 	return &RedisTodoRepository{
