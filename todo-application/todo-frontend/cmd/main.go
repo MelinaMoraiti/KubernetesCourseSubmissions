@@ -5,31 +5,30 @@ import (
 
 	"todo-app/internal/server"
     "time"
-    "os"
-	"github.com/joho/godotenv"
 	"todo-app/internal/utils"
+	"todo-app/internal/config"
 )
 
 func main() {
-	_ = godotenv.Load()
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatalf("invalid config: %v", err)
+	}
+
     // Define cache parameters for Picsum image
-	imagePath :=  os.Getenv("STORED_IMAGES_PATH") + "current.jpg"
-	imageURL := os.Getenv("IMAGE_URL")
+	imagePath :=  cfg.StoredImagesPath + "current.jpg"
 
-	cacheDurationString := os.Getenv("IMAGE_CACHE_DURATION")
-	cacheDuration, _ := time.ParseDuration(cacheDurationString)
-
-	if err := utils.CacheImage(imagePath, imageURL, cacheDuration); err != nil {
+	if err := utils.CacheImage(imagePath, cfg.ImageURL, cfg.ImageCacheDuration); err != nil {
     	log.Printf("Warning: Failed to initial cache image: %v", err)
     }
 
     // 2. Start a background ticker to update the image periodically
     go func() {
-    		ticker := time.NewTicker(cacheDuration)
+    		ticker := time.NewTicker(cfg.ImageCacheDuration)
     		defer ticker.Stop()
 
     		for range ticker.C {
-    			if err := utils.CacheImage(imagePath, imageURL, cacheDuration); err != nil {
+    			if err := utils.CacheImage(imagePath, cfg.ImageURL, cfg.ImageCacheDuration); err != nil {
     				log.Printf("Warning: Failed to update cached image: %v", err)
     			} else {
     				log.Println("Successfully updated cached image")

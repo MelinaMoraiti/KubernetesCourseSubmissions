@@ -2,12 +2,11 @@ package server
 
 import (
 	"fmt"
+	"log"
 	"net/http"
-	"os"
-	"strconv"
 	"time"
 
-	_ "github.com/joho/godotenv/autoload"
+	"todo-app/internal/config"
 	"todo-app/internal/routes"
 )
 
@@ -16,15 +15,22 @@ type Server struct {
 }
 
 func NewServer() *http.Server {
-	port, _ := strconv.Atoi(os.Getenv("PORT"))
-	newServer := &Server{
-		port: port,
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatalf("invalid config: %v", err)
 	}
 
-	// Declare Server config
+	newServer := &Server{
+		port: cfg.Port,
+	}
+	handler, err := routes.RegisterRoutes(cfg.TodoBackendURL, cfg.StoredImagesPath)
+	if err != nil {
+		log.Fatalf("failed to register routes: %v", err)
+	}
+
 	server := &http.Server{
 		Addr:         fmt.Sprintf(":%d", newServer.port),
-		Handler:      routes.RegisterRoutes(),
+		Handler:      handler,
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,

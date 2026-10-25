@@ -1,47 +1,78 @@
 package routes
 
 import (
-    "encoding/json"
-    "html/template"
-    "io"
-    "log"
-    "net/http"
-    "net/url"
-    "os"
+	"encoding/json"
+	"html/template"
+	"io"
+	"log"
+	"net/http"
+	"net/url"
 
-    "github.com/go-chi/chi/v5"
-    "github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 
-    "todo-app/internal/models"
+	"todo-app/internal/health"
+	"todo-app/internal/models"
 )
 
-func RegisterRoutes() http.Handler {
-	r := chi.NewRouter()
+func RegisterRoutes(todoBackendURL, storedImagesPath string) (http.Handler, error) {
+	breakSwitch := &health.Switch{}
 
-	r.Use(middleware.Logger)
-
-	r.Handle("/images/*",
-        http.StripPrefix("/images/",
-            http.FileServer(http.Dir(os.Getenv("STORED_IMAGES_PATH"))),
-        ),
-    )
-
-	r.Get("/", indexHandler)
-	r.Get("/healthz", healthHandler)
-	r.Post("/todos", createTodoHandler)
-	return r
-}
-var todoBackendURL = os.Getenv("TODO_BACKEND_URL")
-func healthHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-}
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	if todoBackendURL == "" {
-		log.Println("TODO_BACKEND_URL is not set")
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
+	// Liveness: only the process itself. A backend outage must not restart this pod.
+	healthz, err := health.NewHandler(breakSwitch.Check())
+	if err != nil {
+		return nil, err
 	}
 
+	// Readiness: can this pod serve traffic? Add new dependencies here.
+	readyz, err := health.NewHandler(
+		breakSwitch.Check(),
+		health.Backend(todoBackendURL),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	r := chi.NewRouter()
+
+	// Probes stay outside the logging middleware.
+	r.Handle("/healthz", healthz)
+	r.Handle("/readyz", readyz)
+
+	r.Group(func(r chi.Router) {
+		r.Use(middleware.Logger)
+
+		r.Handle("/images/*",
+			http.StripPrefix("/images/",
+				http.FileServer(http.Dir(storedImagesPath)),
+			),
+		)
+
+		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			indexHandler(w, r, todoBackendURL)
+		})
+
+		r.Post("/todos", func(w http.ResponseWriter, r *http.Request) {
+			createTodoHandler(w, r, todoBackendURL)
+		})
+
+		r.Post("/break", func(w http.ResponseWriter, r *http.Request) {
+			breakHandler(w, r, breakSwitch)
+		})
+	})
+
+	return r, nil
+}
+
+func breakHandler(w http.ResponseWriter, r *http.Request, s *health.Switch) {
+	s.Break()
+	log.Println("app was manually broken, /healthz and /readyz will now return 503")
+
+	w.Header().Set("Content-Type", "text/html")
+	w.Write([]byte(`<span class="text-error">App is broken: /healthz returns 503</span>`))
+}
+
+func indexHandler(w http.ResponseWriter, r *http.Request, todoBackendURL string) {
 	resp, err := http.Get(todoBackendURL + "/todos")
 	if err != nil {
 		log.Printf("Could not get all todos: %v", err)
@@ -74,21 +105,16 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Could not execute template: %v", err)
 	}
 }
-func createTodoHandler(w http.ResponseWriter, r *http.Request) {
-	todo := r.FormValue("todo")
 
+func createTodoHandler(w http.ResponseWriter, r *http.Request, todoBackendURL string) {
 	form := url.Values{}
-	form.Set("todo", todo)
+	form.Set("todo", r.FormValue("todo"))
 
-	resp, err := http.PostForm(
-		todoBackendURL+"/todos",
-		form,
-	)
+	resp, err := http.PostForm(todoBackendURL+"/todos", form)
 	if err != nil {
 		http.Error(w, "Could not contact todo backend", http.StatusBadGateway)
 		return
 	}
-
 	defer resp.Body.Close()
 
 	w.WriteHeader(resp.StatusCode)
