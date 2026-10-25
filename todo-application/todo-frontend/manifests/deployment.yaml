@@ -47,3 +47,12 @@ spec:
             timeoutSeconds: 2
             failureThreshold: 1
             successThreshold: 1 
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            httpGet:
+              path: /readyz
+              port: http-port
+            failureThreshold: 1   
+            successThreshold: 1
+            timeoutSeconds: 2            
