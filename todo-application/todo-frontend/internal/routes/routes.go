@@ -84,7 +84,8 @@ func renderFailure(w http.ResponseWriter) {
 
 func breakHandler(w http.ResponseWriter, r *http.Request, s *health.Switch) {
 	s.Break()
-	renderFailure(w)
+	w.Header().Set("HX-Redirect", "/")
+	w.WriteHeader(http.StatusOK)
 }
 func indexHandler(w http.ResponseWriter, r *http.Request, todoBackendURL string) {
 	resp, err := http.Get(todoBackendURL + "/todos")
@@ -131,6 +132,7 @@ func createTodoHandler(w http.ResponseWriter, r *http.Request, todoBackendURL st
 	}
 	defer resp.Body.Close()
 
+	w.Header().Set("HX-Redirect", "/")
 	w.WriteHeader(resp.StatusCode)
 	io.Copy(w, resp.Body)
 }
