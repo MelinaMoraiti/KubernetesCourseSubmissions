@@ -21,7 +21,7 @@ spec:
             claimName: images-claim
       containers:
         - name: todo-app
-          image: melinadevops/todo-app:v4.2
+          image: melinadevops/todo-app
           ports:
             - name: http-port
               containerPort: 8000
