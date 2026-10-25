@@ -49,6 +49,10 @@ func RegisterRoutes(todoBackendURL, storedImagesPath string) (http.Handler, erro
 		)
 
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			if breakSwitch.Broken() {
+				renderFailure(w)
+				return
+			}
 			indexHandler(w, r, todoBackendURL)
 		})
 
@@ -63,15 +67,25 @@ func RegisterRoutes(todoBackendURL, storedImagesPath string) (http.Handler, erro
 
 	return r, nil
 }
+// renderFailure renders the "system failure" page.
+func renderFailure(w http.ResponseWriter) {
+	tmpl, err := template.ParseFiles("web/templates/failure.html")
+	if err != nil {
+		log.Printf("Could not parse failure template: %v", err)
+		http.Error(w, "System Failure", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusServiceUnavailable)
+	if err := tmpl.Execute(w, nil); err != nil {
+		log.Printf("Could not execute failure template: %v", err)
+	}
+}
 
 func breakHandler(w http.ResponseWriter, r *http.Request, s *health.Switch) {
 	s.Break()
-	log.Println("app was manually broken, /healthz and /readyz will now return 503")
-
-	w.Header().Set("Content-Type", "text/html")
-	w.Write([]byte(`<span class="text-error">App is broken: /healthz returns 503</span>`))
+	renderFailure(w)
 }
-
 func indexHandler(w http.ResponseWriter, r *http.Request, todoBackendURL string) {
 	resp, err := http.Get(todoBackendURL + "/todos")
 	if err != nil {

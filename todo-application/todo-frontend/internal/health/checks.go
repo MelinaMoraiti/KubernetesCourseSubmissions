@@ -28,6 +28,8 @@ func Backend(baseURL string) hg.Config {
 // Break makes every handler that includes Check() fail until the process restarts.
 func (s *Switch) Break() { s.broken.Store(true) }
 
+func (s *Switch) Broken() bool { return s.broken.Load() }
+
 func (s *Switch) Check() hg.Config {
 	return hg.Config{
 		Name:    "manual-break",

@@ -4,8 +4,6 @@
     <script src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.18/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script defer data-domain="todo.astipan.com" src="https://analytics.ujstor.com/js/script.js"></script>
-    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body class="container max-w-5xl mx-auto px-4">
@@ -72,15 +70,9 @@
             </div>
         </div>
         <div class="mt-6 flex items-center gap-4">
-            <button
-                class="btn btn-error btn-outline"
-                hx-post="/break"
-                hx-target="#break-status"
-                hx-swap="innerHTML"
-            >
-                Break app
+            <button class="btn btn-error btn-outline" hx-post="/break">
+                Break App
             </button>
-            <div id="break-status" class="text-sm">App is healthy</div>
         </div>
     </div>
 </div>
