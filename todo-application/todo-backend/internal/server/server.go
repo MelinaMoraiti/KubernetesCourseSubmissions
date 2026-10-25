@@ -30,7 +30,7 @@ func NewServer() (*http.Server, error) {
 		// later we can add more checks here ...
 
 	}
-	readyz, err := health.NewReadinessHandler(checks...)
+	readyz, err := health.NewHandler(checks...)
 	if err != nil {
 		return nil, err
 	}
