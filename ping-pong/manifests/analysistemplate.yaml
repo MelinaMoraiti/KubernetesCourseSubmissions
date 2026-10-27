@@ -13,7 +13,7 @@ spec:
     interval: 1m
     count: 4
     failureLimit: 0
-    successCondition: result[0] < 100
+    successCondition: result < 100
     provider:
       prometheus:
         address: http://kps-kube-prometheus-stack-prometheus.prometheus.svc.cluster.local:9090 
@@ -21,5 +21,5 @@ spec:
           scalar(
             sum(
               rate(container_cpu_usage_seconds_total{namespace="{{ args.namespace }}", container!="", container!="POD"}[5m])
-            ) * 100
+            ) * 1000
           )
