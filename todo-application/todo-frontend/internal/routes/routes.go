@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -63,9 +64,49 @@ func RegisterRoutes(todoBackendURL, storedImagesPath string) (http.Handler, erro
 		r.Post("/break", func(w http.ResponseWriter, r *http.Request) {
 			breakHandler(w, r, breakSwitch)
 		})
+		r.Patch("/todos/{id}/complete", func(w http.ResponseWriter, r *http.Request) {
+			completeTodoHandler(w, r, todoBackendURL)
+		})
 	})
 
 	return r, nil
+}
+func completeTodoHandler(w http.ResponseWriter, r *http.Request, todoBackendURL string) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		http.Error(w, "Invalid todo ID", http.StatusBadRequest)
+		return
+	}
+
+	req, err := http.NewRequestWithContext(
+		r.Context(),
+		http.MethodPatch,
+		todoBackendURL+"/todos/"+strconv.Itoa(id)+"/complete",
+		nil,
+	)
+	if err != nil {
+		log.Printf("Could not build complete request: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Printf("Could not contact todo backend: %v", err)
+		http.Error(w, "Could not contact todo backend", http.StatusBadGateway)
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		log.Printf("Todo API returned status: %s", resp.Status)
+		http.Error(w, "Could not complete todo", resp.StatusCode)
+		return
+	}
+
+	// Reload the page so the todo shows as completed, same as createTodoHandler.
+	w.Header().Set("HX-Redirect", "/")
+	w.WriteHeader(http.StatusOK)
 }
 // renderFailure renders the "system failure" page.
 func renderFailure(w http.ResponseWriter) {

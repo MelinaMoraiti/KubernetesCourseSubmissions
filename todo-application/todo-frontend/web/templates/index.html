@@ -55,10 +55,22 @@
                 {{ block "Todos" . }}
                 {{ if . }}
                 {{ range . }}
-                <div class="flex items-center justify-between p-3 rounded-lg bg-base-200/50 hover:bg-base-200 transition-colors border border-base-300/50">
-                            <span class="text-base break-all pr-4 {{if .Done}} line-through text-base-content/40 {{else}} text-base-content {{end}}">
-                                {{ .Task }}
-                            </span>
+                <div class="flex items-center justify-between gap-3 p-3 rounded-lg bg-base-200/50 hover:bg-base-200 transition-colors border border-base-300/50">
+                    <input
+                        type="checkbox"
+                        class="checkbox checkbox-primary"
+                        aria-label="Mark todo as complete"
+                        {{ if .Done }}
+                        checked disabled
+                        {{ else }}
+                        hx-patch="/todos/{{ .ID }}/complete"
+                        hx-trigger="change"
+                        hx-swap="none"
+                        {{ end }}
+                    />
+                    <span class="flex-1 text-base break-all {{ if .Done }}line-through text-base-content/40{{ else }}text-base-content{{ end }}">
+                        {{ .Task }}
+                     </span>
                 </div>
                 {{ end }}
                 {{ else }}

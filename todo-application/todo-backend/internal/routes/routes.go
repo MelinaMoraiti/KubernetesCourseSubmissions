@@ -2,8 +2,10 @@ package routes
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
+	"strconv"
 	"todo-backend/internal/models"
 	"todo-backend/internal/repository"
 
@@ -25,10 +27,36 @@ func RegisterRoutes(todoRepository repository.TodoRepository, readyz http.Handle
 		r.Post("/todos", func(w http.ResponseWriter, r *http.Request) {
 			createTodosHandler(w, r, todoRepository)
 		})
+		r.Patch("/todos/{id}/complete", func(w http.ResponseWriter, r *http.Request) {
+    		completeTodoHandler(w, r, todoRepository)
+		})
 	})
 	return r
 }
+func completeTodoHandler(w http.ResponseWriter, r *http.Request, todoRepository repository.TodoRepository) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		http.Error(w, "Invalid todo ID", http.StatusBadRequest)
+		return
+	}
 
+	todo, err := todoRepository.CompleteTodo(id)
+	if err != nil {
+		if errors.Is(err, repository.ErrTodoNotFound) {
+			http.Error(w, "Todo not found", http.StatusNotFound)
+			return
+		}
+		log.Printf("Could not complete todo %d: %v", id, err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	if err := json.NewEncoder(w).Encode(todo); err != nil {
+		log.Printf("Could not encode todo %d: %v", id, err)
+	}
+}
 func readTodosHandler(w http.ResponseWriter, r *http.Request, todoRepository repository.TodoRepository) {
 	todos, err := todoRepository.FetchAllTodos()
 	if err != nil {
@@ -48,6 +76,7 @@ func readTodosHandler(w http.ResponseWriter, r *http.Request, todoRepository rep
 		log.Printf("Could not encode todos: %v", err)
 	}
 }
+
 func createTodosHandler(w http.ResponseWriter, r *http.Request, todoRepository repository.TodoRepository) {
 	err := r.ParseForm()
 	if err != nil {

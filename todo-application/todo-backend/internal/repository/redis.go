@@ -3,17 +3,20 @@ package repository
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
 
-	"github.com/redis/go-redis/v9"
 	"todo-backend/internal/models"
+
+	"github.com/redis/go-redis/v9"
 )
 
 type RedisTodoRepository struct {
 	client *redis.Client
 }
+var ErrTodoNotFound = errors.New("todo not found")
 
 func NewRedisTodoRepository(redisAddr string) (*RedisTodoRepository, error) {
 
@@ -144,6 +147,36 @@ func (r *RedisTodoRepository) FetchTodo(id int) (models.Todo, error) {
 
 	return todo, nil
 }
+func (r *RedisTodoRepository) CompleteTodo(todoId int) (models.Todo, error) {
+	ctx := context.Background()
+	key := fmt.Sprintf("todo:%d", todoId)
+
+	data, err := r.client.Get(ctx, key).Bytes()
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			return models.Todo{}, fmt.Errorf("todo %d not found", todoId)
+		}
+		return models.Todo{}, fmt.Errorf("failed to fetch todo %d: %w", todoId, err)
+	}
+	var todo models.Todo
+	if err := json.Unmarshal(data, &todo); err != nil {
+		return models.Todo{}, fmt.Errorf("failed to decode todo %d: %w", todoId, err)
+	}
+	todo.Done = true
+
+	updated, err := json.Marshal(todo)
+	if err != nil {
+		return models.Todo{}, fmt.Errorf("failed to encode todo %d: %w", todoId, err)
+	}
+
+	// TTL of 0 means no expiration
+	if err := r.client.Set(ctx, key, updated, 0).Err(); err != nil {
+		return models.Todo{}, fmt.Errorf("failed to save todo %d: %w", todoId, err)
+	}
+
+	return todo, nil
+}
+
 func (r *RedisTodoRepository) CreateTodo(todo models.Todo) (models.Todo, error) {
 	ctx := context.Background()
 
