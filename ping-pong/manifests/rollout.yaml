@@ -23,4 +23,16 @@ spec:
     spec:
       containers:
         - name: ping-pong
-          image: melinadevops/pingpong:latest
+          image: melinadevops/pingpong:v1
+          readinessProbe:
+            initialDelaySeconds: 10 # Initial delay until the readiness is tested
+            periodSeconds: 5 # How often to test
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 9000
+          env:
+            - name: PORT
+              value: "9000"
+            - name: DATABASE_URL
+              value: "postgres://postgres:testpassword@postgres-db-lb:5432/postgres?sslmode=disable"  
