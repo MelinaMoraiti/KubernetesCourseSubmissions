@@ -55,8 +55,8 @@ jobs:
 
       - name: Build
         run: |
-          docker build --tag $BACKEND_TAG ./kubernetes-basics/todo-backend
-          docker build --tag $APP_TAG ./kubernetes-basics/todo-app
+          docker build --tag $BACKEND_TAG ./todo-application/todo-backend
+          docker build --tag $APP_TAG ./todo-application/todo-frontend
 
       - name: Publish
         run: |
@@ -66,7 +66,7 @@ jobs:
       - uses: imranismail/setup-kustomize@v3
 
       - name: Deploy
-        working-directory: kubernetes-basics
+        working-directory: todo-application
         run: |-
           kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
           kustomize edit set namespace $NAMESPACE 
