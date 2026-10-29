@@ -48,7 +48,11 @@ func RegisterRoutes(todoBackendURL, storedImagesPath string) (http.Handler, erro
 				http.FileServer(http.Dir(storedImagesPath)),
 			),
 		)
-
+		r.Handle("/static/*",
+			http.StripPrefix("/static/",
+				http.FileServer(http.Dir("web/static")),
+			),
+		)
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 			if breakSwitch.Broken() {
 				renderFailure(w)
