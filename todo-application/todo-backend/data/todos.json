@@ -1,17 +1,17 @@
 [
   {
     "id": 0,
-    "task": "Create a weekly schedule with Google Calendar",
-    "done": true
+    "task": "Create a Dockerfile that initializes Redis with JSON file.",
+    "done": false
   },
   {
     "id": 1,
-    "task": "Improve my CV using Canvas",
+    "task": "Update my Github Readme",
     "done": false
   },
   {
     "id": 2,
-    "task": "Book an appointment with psychiatrist for autism assessment",
+    "task": "Learn VS Code Keyboard shortcuts",
     "done": false
   }
 ]
