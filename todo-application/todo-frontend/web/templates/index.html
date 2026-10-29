@@ -109,7 +109,7 @@
                     {{ if .Done }}
                     checked disabled
                     {{ else }}
-                    hx-patch="/todos/{{ .ID }}/complete"
+                    hx-put="/todos/{{ .ID }}"
                     hx-trigger="change"
                     hx-swap="none"
                     {{ end }}
