@@ -28,12 +28,9 @@
 
 /* Uncompleted tasks: shades of blue */
 .todo-active {
-    background: rgba(59, 130, 246, 0.16);
-    border: 1px solid rgba(147, 197, 253, 0.3);
-}
-.todo-active:hover {
-    background: rgba(59, 130, 246, 0.26);
-    border-color: rgba(147, 197, 253, 0.55);
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.479);
 }
 
 /* Completed tasks: shades of green */
@@ -89,8 +86,8 @@
 /* Break button: red with a light border */
 .break-btn {
     background: #AF0404;
-    color: #ff0000a4;
-    border: 1px solid #ff000023;
+    color: #fff;
+    border: 1px solid #fff;
     box-shadow: 0 0 16px #af040480;
 }
 .break-btn:hover {
