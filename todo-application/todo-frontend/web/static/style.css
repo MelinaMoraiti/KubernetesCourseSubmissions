@@ -38,12 +38,11 @@
 
 /* Completed tasks: shades of green */
 .todo-done {
-    background: #476349;
-    border: 1px solid #2B5748;
+    background: #12544F;
+    border: 1px solid #2a835f2f;
+    color: #2a835fab;
 }
-.todo-done:hover {
-    background: #476349;
-}
+
 /* daisyUI fades disabled checkboxes; keep the green fully visible. */
 .todo-done .checkbox {
     opacity: 1;
@@ -76,27 +75,27 @@
 
 /* Green button: dark glass tinted green, white border, like the reference buttons */
 .btn.btn-green {
-    background: #618764;
+    background: #12544F;
     color: #fff;
     border: 1px solid rgba(255, 255, 255, 0.45);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
 }
 .btn.btn-green:hover {
-    background: rgba(34, 197, 94, 0.5);
+    background: #2a835f2f;
     border-color: #fff;
 }
 
 /* Break button: red with a light border */
 .break-btn {
-    background: #872341;
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    box-shadow: 0 0 16px rgba(220, 38, 38, 0.45);
+    background: #AF0404;
+    color: #ff0000a4;
+    border: 1px solid #ff000023;
+    box-shadow: 0 0 16px #af040480;
 }
 .break-btn:hover {
-    background: #872341;
-    border-color: #fff;
+    background: #AF0404;
+    border-color: #ff000083;
 }
 
 .btn, input {

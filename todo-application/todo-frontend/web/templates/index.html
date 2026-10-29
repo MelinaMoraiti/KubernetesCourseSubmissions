@@ -46,7 +46,7 @@
 
             <div>
                 <h1 class="font-extrabold text-4xl text-white drop-shadow-lg">Todo App</h1>
-                <p class="mt-1 text-sm italic text-blue-100/80">
+                <p class="mt-1 text-sm italic font-bold text-gray-100/80">
                     “Leave nothing for tomorrow which can be done today.” —Abraham Lincoln
                 </p>
             </div>
@@ -114,13 +114,13 @@
                     hx-swap="none"
                     {{ end }}
                 />
-                <span class="flex-1 text-base break-all {{ if .Done }}line-through text-emerald-200/50{{ else }}text-blue-50{{ end }}">
+                <span class="flex-1 text-base break-all {{ if .Done }}line-through text-emerald-200/50{{ else }}text-gray-50{{ end }}">
                     {{ .Task }}
                 </span>
             </div>
             {{ end }}
             {{ else }}
-            <div class="text-center py-8 text-blue-200/40">
+            <div class="text-center font-bold py-8 text-gray-200/40">
                 <p>No tasks yet! Add one above.</p>
             </div>
             {{ end }}
