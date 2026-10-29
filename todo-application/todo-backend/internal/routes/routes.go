@@ -27,7 +27,7 @@ func RegisterRoutes(todoRepository repository.TodoRepository, readyz http.Handle
 		r.Post("/todos", func(w http.ResponseWriter, r *http.Request) {
 			createTodosHandler(w, r, todoRepository)
 		})
-		r.Patch("/todos/{id}/complete", func(w http.ResponseWriter, r *http.Request) {
+		r.Put("/todos/{id}", func(w http.ResponseWriter, r *http.Request) {
     		completeTodoHandler(w, r, todoRepository)
 		})
 	})

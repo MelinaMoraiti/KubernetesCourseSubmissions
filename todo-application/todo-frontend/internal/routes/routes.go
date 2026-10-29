@@ -68,7 +68,7 @@ func RegisterRoutes(todoBackendURL, storedImagesPath string) (http.Handler, erro
 		r.Post("/break", func(w http.ResponseWriter, r *http.Request) {
 			breakHandler(w, r, breakSwitch)
 		})
-		r.Patch("/todos/{id}/complete", func(w http.ResponseWriter, r *http.Request) {
+		r.Put("/todos/{id}", func(w http.ResponseWriter, r *http.Request) {
 			completeTodoHandler(w, r, todoBackendURL)
 		})
 	})
@@ -84,8 +84,8 @@ func completeTodoHandler(w http.ResponseWriter, r *http.Request, todoBackendURL 
 
 	req, err := http.NewRequestWithContext(
 		r.Context(),
-		http.MethodPatch,
-		todoBackendURL+"/todos/"+strconv.Itoa(id)+"/complete",
+		http.MethodPut,
+		todoBackendURL+"/todos/"+strconv.Itoa(id),
 		nil,
 	)
 	if err != nil {
