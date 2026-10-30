@@ -6,3 +6,6 @@ data:
   PORT: "9000"
   REDIS_HOST: "redis-svc"
   REDIS_PORT: "6379"
+  NATS_URL: "nats://my-nats.nats:4222"
+  NATS_STREAM_NAME: "TODOS"
+  NATS_SUBJECTS: "todos.>"

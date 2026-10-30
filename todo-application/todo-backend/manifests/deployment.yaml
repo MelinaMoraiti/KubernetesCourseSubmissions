@@ -35,6 +35,21 @@ spec:
                 configMapKeyRef:
                   name: todo-backend-config
                   key: REDIS_PORT
+            - name: NATS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-backend-config
+                  key: NATS_URL
+            - name: NATS_STREAM_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-backend-config
+                  key: NATS_STREAM_NAME
+            - name: NATS_SUBJECTS
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-backend-config
+                  key: NATS_SUBJECTS
           readinessProbe:
             initialDelaySeconds: 10
             periodSeconds: 5
