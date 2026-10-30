@@ -3,11 +3,10 @@ package main
 import (
 	"log"
 
-	"todo-backend/internal/server"
 	"todo-backend/internal/repository"
+	"todo-backend/internal/server"
 
 	"todo-backend/internal/config"
-
 )
 
 func main() {
