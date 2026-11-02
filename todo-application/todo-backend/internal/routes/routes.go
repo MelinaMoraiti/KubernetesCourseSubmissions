@@ -59,7 +59,7 @@ func completeTodoHandler(w http.ResponseWriter, r *http.Request, todoRepository 
         http.Error(w, "Failed to publish todo event", http.StatusInternalServerError)
         return
     }
-
+	log.Printf("Successfully published todo completed event %v in this subject %s", event, event.Subject())
 	w.Header().Set("Content-Type", "application/json")
 
 	if err := json.NewEncoder(w).Encode(todo); err != nil {
@@ -121,6 +121,7 @@ func createTodosHandler(w http.ResponseWriter, r *http.Request, todoRepository r
         http.Error(w, "Failed to publish todo event", http.StatusInternalServerError)
         return
     }
+	log.Printf("Successfully published todo created event %v in this subject %s", event, event.Subject())
 
 	log.Printf("Todo: %s created successfully", createdTodo.Task)
 
