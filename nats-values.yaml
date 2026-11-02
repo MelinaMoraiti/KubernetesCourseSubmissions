@@ -1,12 +1,8 @@
-
 config:
   jetstream:
     enabled: true
-
-    fileStore:
+    memoryStore:
       enabled: true
-      dir: /data
-      pvc:
-        enabled: true
-        size: 5Gi
-
+      maxSize: 256Mi
+    fileStore:
+      enabled: false
