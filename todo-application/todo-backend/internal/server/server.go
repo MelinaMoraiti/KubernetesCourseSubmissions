@@ -31,8 +31,7 @@ func NewServer() (*http.Server, error) {
 	}
 	checks := []hg.Config{
 		health.Redis(cfg.RedisDSN()),
-		// later we can add more checks here ...
-
+		health.Nats(cfg.NatsURL),
 	}
 	readyz, err := health.NewHandler(checks...)
 	if err != nil {
