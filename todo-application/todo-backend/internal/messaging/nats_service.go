@@ -29,6 +29,7 @@ var _ EventPublisher = (*NatsService)(nil)
 func NewNatsService(ctx context.Context, cfg *config.Config) (*NatsService, error) {
 	nc, err := nats.Connect(cfg.NatsURL,
 		nats.MaxReconnects(-1),
+		nats.ReconnectWait(2*time.Second),
 		nats.RetryOnFailedConnect(true),
 	)
 	if err != nil {

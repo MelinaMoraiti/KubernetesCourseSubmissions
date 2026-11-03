@@ -21,12 +21,13 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to initialize Redis: %v", err)
 	}
-	srv, err  := server.NewServer()
+	srv, natsService, err := server.NewServer()
 	if err != nil {
 		log.Fatalf("failed to start server: %v", err)
 	}
-	log.Printf("Server listening on %s", srv.Addr)
+	defer natsService.Close() 
 
+	log.Printf("Server listening on %s", srv.Addr)
 	if err := srv.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}
