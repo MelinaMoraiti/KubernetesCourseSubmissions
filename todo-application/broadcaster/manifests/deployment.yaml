@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broadcaster
+  namespace: project
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: broadcaster
+  template:
+    metadata:
+      labels:
+        app: broadcaster
+    spec:
+      containers:
+        - name: broadcaster
+          image: melinadevops/broadcaster:latest
+          envFrom:
+            - configMapRef:
+                name: broadcaster-config
+          env:
+            - name: WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: broadcaster-secret
+                  key: webhook-url
+          ports:
+            - name: http-port
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http-port
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http-port

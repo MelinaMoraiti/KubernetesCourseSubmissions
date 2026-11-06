@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: broadcaster-config
+  namespace: project
+data:
+  PORT: "8080"
+  NATS_URL: "nats://my-nats.nats.svc.cluster.local:4222"
+  NATS_STREAM_NAME: "TODOS"
+  NATS_SUBJECTS: "todos.>"
+  WEBHOOK_FORMAT: "discord"
+  WEBHOOK_URL: "https://discord.com/api/webhooks/1568366571800367296/gOiUZ5H4qQs8EQWuPEAe3MvTlACl76xive4Rxz2f1fvEzPwZpS1D-fhSNNLs05bMIAa8"
+  BOT_NAME: "bot"
