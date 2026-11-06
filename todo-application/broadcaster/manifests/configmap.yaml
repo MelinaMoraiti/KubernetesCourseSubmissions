@@ -9,5 +9,4 @@ data:
   NATS_STREAM_NAME: "TODOS"
   NATS_SUBJECTS: "todos.>"
   WEBHOOK_FORMAT: "discord"
-  WEBHOOK_URL: "https://discord.com/api/webhooks/1568366571800367296/gOiUZ5H4qQs8EQWuPEAe3MvTlACl76xive4Rxz2f1fvEzPwZpS1D-fhSNNLs05bMIAa8"
   BOT_NAME: "bot"

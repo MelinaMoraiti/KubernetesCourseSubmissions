@@ -6,3 +6,4 @@ private-key.json
 .secrets/
 *.pem
 .env
+secret.yaml
