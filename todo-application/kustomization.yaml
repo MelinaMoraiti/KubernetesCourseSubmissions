@@ -17,6 +17,11 @@ resources:
   - todo-frontend/manifests/service.yaml
   - todo-frontend/manifests/persistentvolumeclaim.yaml
   - todo-frontend/manifests/route.yaml
+
+  - broadcaster/manifests/deployment.yaml
+  - broadcaster/manifests/configmap.yaml
+  - broadcaster/manifests/service.yaml
 images:
   - name: melinadevops/todo-backend
   - name: melinadevops/todo-app
+  - name: melinadevops/broadcaster
