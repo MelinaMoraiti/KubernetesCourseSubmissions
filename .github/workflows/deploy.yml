@@ -2,7 +2,9 @@ name: Release application
 
 on:
   push:
-
+    branches:
+          - '**'
+          
 permissions:
   contents: read
   id-token: write
