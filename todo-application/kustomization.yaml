@@ -22,6 +22,8 @@ resources:
   - broadcaster/manifests/configmap.yaml
   - broadcaster/manifests/service.yaml
   - broadcaster/manifests/sealed-secret.yaml
+
+  - nats-application.yaml
 images:
   - name: melinadevops/todo-backend
   - name: melinadevops/todo-app
