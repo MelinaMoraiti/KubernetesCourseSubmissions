@@ -10,8 +10,8 @@ resources:
   - ping-pong/manifests/deployment-persistent.yaml
   - ping-pong/manifests/postgres-statefulset.yaml
   - ping-pong/manifests/postgres-svc.yaml
-  - ping-pong/manifests/analysistemplate.yaml
-  - ping-pong/manifests/rollout.yaml
+  # - ping-pong/manifests/analysistemplate.yaml
+  # - ping-pong/manifests/rollout.yaml
   - ping-pong/manifests/service.yaml
 
 images:
