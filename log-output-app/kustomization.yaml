@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- log-output-no-split/manifests/deployment-persistent.yaml
+- log-output-no-split/manifests/configmap.yaml
+- log-output-no-split/manifests/gateway.yaml
+- log-output-no-split/manifests/route.yaml
+- log-output-no-split/manifests/service.yaml
+
+- ping-pong/manifests/deployment-persistent.yaml
+- ping-pong/manifests/postgres-statefulset.yaml
+- ping-pong/manifests/postgres-svc.yaml
+- ping-pong/manifests/analysistemplate.yaml
+- ping-pong/manifests/rollout.yaml
+- ping-pong/manifests/service.yaml
+
+images:
+- name: PROJECT/IMAGE
+  newName: melinadevops/postgres-pingpong
+- name: PROJECT/IMAGE
+  newName: melinadevops/pingpong
+- name: PROJECT/IMAGE
+  newName: melinadevops/log_output
