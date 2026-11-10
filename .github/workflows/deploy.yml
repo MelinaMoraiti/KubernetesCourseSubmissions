@@ -82,5 +82,5 @@ jobs:
           kustomize build . | kubectl apply -n $NAMESPACE -f -
           kubectl rollout status deployment/todo-backend-dep -n $NAMESPACE --timeout=180s
           kubectl rollout status deployment/todo-app-dep -n $NAMESPACE --timeout=180s
-          kubectl rollout status deployment/broadcaster -n $NAMESPACE --timeout=180s
+          kubectl rollout status deployment/broadcaster-dep -n $NAMESPACE --timeout=180s
           kubectl get services,gateway -n $NAMESPACE -o wide
