@@ -3,7 +3,6 @@ kind: StatefulSet
 
 metadata:
   name: redis-ss
-  namespace: default
 
 spec:
   serviceName: redis-svc
