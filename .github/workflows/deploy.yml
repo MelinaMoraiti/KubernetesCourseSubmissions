@@ -17,6 +17,7 @@ env:
   REPOSITORY: my-repository
   BACKEND_IMAGE: todo-backend
   FRONTEND_IMAGE: todo-app
+  BROADCASTER_IMAGE: broadcaster
   BRANCH: ${{ github.ref_name }}
   NAMESPACE: ${{ github.ref_name == 'main' && 'project' || github.ref_name }}
 
@@ -54,16 +55,19 @@ jobs:
         run: |
           echo "BACKEND_TAG=$REGISTRY/$PROJECT_ID/$REPOSITORY/$BACKEND_IMAGE:$BRANCH-$GITHUB_SHA" >> $GITHUB_ENV
           echo "APP_TAG=$REGISTRY/$PROJECT_ID/$REPOSITORY/$FRONTEND_IMAGE:$BRANCH-$GITHUB_SHA" >> $GITHUB_ENV
+          echo "BROADCASTER_TAG=$REGISTRY/$PROJECT_ID/$REPOSITORY/$BROADCASTER_IMAGE:$BRANCH-$GITHUB_SHA" >> $GITHUB_ENV
 
       - name: Build
         run: |
           docker build --tag $BACKEND_TAG ./todo-application/todo-backend
           docker build --tag $APP_TAG ./todo-application/todo-frontend
+          docker build --tag $BROADCASTER_TAG ./todo-application/broadcaster
 
       - name: Publish
         run: |
           docker push $BACKEND_TAG
           docker push $APP_TAG
+          docker push $BROADCASTER_TAG
         
       - uses: imranismail/setup-kustomize@v3
 
@@ -74,7 +78,9 @@ jobs:
           kustomize edit set namespace $NAMESPACE 
           kustomize edit set image melinadevops/todo-backend=$BACKEND_TAG
           kustomize edit set image melinadevops/todo-app=$APP_TAG
+          kustomize edit set image melinadevops/broadcaster=$BROADCASTER_TAG
           kustomize build . | kubectl apply -n $NAMESPACE -f -
           kubectl rollout status deployment/todo-backend-dep -n $NAMESPACE --timeout=180s
           kubectl rollout status deployment/todo-app-dep -n $NAMESPACE --timeout=180s
+          kubectl rollout status deployment/broadcaster-dep -n $NAMESPACE --timeout=180s
           kubectl get services,gateway -n $NAMESPACE -o wide
