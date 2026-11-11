@@ -1,0 +1,38 @@
+[
+  {
+    "id": 0,
+    "task": "Create a Dockerfile that initializes Redis with JSON file.",
+    "done": false
+  },
+  {
+    "id": 1,
+    "task": "Update my Github Profile Readme",
+    "done": false
+  },
+  {
+    "id": 2,
+    "task": "Learn VS Code Keyboard shortcuts",
+    "done": false
+  },
+  {
+    "id": 3,
+    "task": "In todo-frontend add path to html file as a .env variable",
+    "done": false
+  },
+  {
+    "id": 4,
+    "task": "Improve my LinkedIn Profile by adding summary and projects",
+    "done": false
+  },
+  {
+    "id": 5,
+    "task": "Complete Chapter 4 of DevOps with Kubernetes Course",
+    "done": false
+  },
+  {
+    "id": 6,
+    "task": "Migrate IEEE Website's frontend to Next.js version 16",
+    "done": false
+  }
+  
+]
