@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+metadata:
+  name: staging
+namespace: staging
+
+resources:
+  - ../../base
+
+patches:
+  # 1. Configure Broadcaster to log messages locally without external forwarding
+  - path: patches/broadcaster-config.yaml
+    target:
+      kind: ConfigMap
+      name: broadcaster-config # Match the exact ConfigMap name in broadcaster/manifests/configmap.yaml
+
+  # 2. Disable database backups in staging by removing the cronjob
+  - path: patches/disable-db-backup.yaml
+    target:
+      kind: CronJob
+      name: db-backup # Match your backup cronjob name if applicable
