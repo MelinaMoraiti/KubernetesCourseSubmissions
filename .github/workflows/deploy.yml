@@ -58,20 +58,20 @@ jobs:
             VERSION="${GITHUB_REF#refs/tags/}"
             echo "env_name=production" >> $GITHUB_OUTPUT
             echo "namespace=production" >> $GITHUB_OUTPUT
-            echo "overlay_path=overlays/prod" >> $GITHUB_OUTPUT
+            echo "overlay_path=todo-application/overlays/prod" >> $GITHUB_OUTPUT
             echo "image_tag=v-${VERSION}-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref_name }}" == "main" ]]; then
             # 2. Main branch commit -> Staging namespace
             echo "env_name=staging" >> $GITHUB_OUTPUT
             echo "namespace=staging" >> $GITHUB_OUTPUT
-            echo "overlay_path=overlays/staging" >> $GITHUB_OUTPUT
+            echo "overlay_path=todo-application/overlays/staging" >> $GITHUB_OUTPUT
             echo "image_tag=main-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
           else
             # 3. Any other branch -> Namespace equals branch name (using staging config overlay)
             BRANCH_NAME="${{ github.ref_name }}"
             echo "env_name=${BRANCH_NAME}" >> $GITHUB_OUTPUT
             echo "namespace=${BRANCH_NAME}" >> $GITHUB_OUTPUT
-            echo "overlay_path=overlays/staging" >> $GITHUB_OUTPUT
+            echo "overlay_path=todo-application/overlays/base" >> $GITHUB_OUTPUT
             echo "image_tag=${BRANCH_NAME}-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
           fi
  
