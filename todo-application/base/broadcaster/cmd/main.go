@@ -38,11 +38,14 @@ func run() error {
 	}
 	defer natsService.Close()
 
-	webhook, err := notifier.New(cfg.WebhookFormat, cfg.WebhookURL)
-	if err != nil {
-		return err
+	var webhook notifier.Notifier
+	if cfg.EnableNotifications {
+		webhook, err = notifier.New(cfg.WebhookFormat, cfg.WebhookURL)
+		if err != nil {
+			return err
+		}
 	}
-	svc := broadcast.NewService(webhook, natsService, cfg.BotName)
+	svc := broadcast.NewService(webhook, natsService, cfg.BotName, cfg.EnableNotifications)
 
 	if err := natsService.SubscribeTodoEvents(ctx, svc.HandleTodoEvent); err != nil {
 		return err
@@ -50,7 +53,7 @@ func run() error {
 
 	serveErr := make(chan error, 1)
 	go func() {
-		slog.Info("broadcaster started", "addr", srv.Addr, "format", cfg.WebhookFormat)
+		slog.Info("broadcaster started", "addr", srv.Addr, "format", cfg.WebhookFormat, "notifications", cfg.EnableNotifications)
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			serveErr <- err
 		}

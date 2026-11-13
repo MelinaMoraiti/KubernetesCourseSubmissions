@@ -3,5 +3,4 @@ kind: ConfigMap
 metadata:
   name: broadcaster-config
 data:
-  FORWARDING_ENABLED: "false"
-  WEBHOOK_URL: ""
+  ENABLE_NOTIFICATIONS: "false"

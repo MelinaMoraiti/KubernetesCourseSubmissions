@@ -18,14 +18,20 @@ type Service struct {
 	notifier notifier.Notifier
 	status   messaging.StatusPublisher
 	botName  string
+	enabled  bool
 }
 
-func NewService(n notifier.Notifier, status messaging.StatusPublisher, botName string) *Service {
-	return &Service{notifier: n, status: status, botName: botName}
+func NewService(n notifier.Notifier, status messaging.StatusPublisher, botName string, enabled bool) *Service {
+	return &Service{notifier: n, status: status, botName: botName, enabled: enabled}
 }
 
 // HandleTodoEvent matches messaging.TodoEventHandler.
 func (s *Service) HandleTodoEvent(ctx context.Context, ev models.TodoEvent) error {
+	if !s.enabled {
+		slog.Debug("notifications disabled, event skipped", "event_id", ev.ID, "type", ev.Type)
+		return nil
+	}
+
 	msg := models.StatusMessage{User: s.botName, Message: Describe(ev)}
 
 	// Detach from the app context so a message that is already being sent

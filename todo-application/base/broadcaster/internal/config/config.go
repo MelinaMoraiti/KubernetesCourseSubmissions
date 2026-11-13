@@ -18,6 +18,9 @@ type Config struct {
 	WebhookURL    string
 	WebhookFormat string // "generic" or "discord"
 	BotName       string
+
+	// When false, events are consumed but nothing is sent.
+	EnableNotifications bool
 }
 
 func Load() (*Config, error) {
@@ -36,8 +39,13 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("NATS_SUBJECTS is empty")
 	}
 
+	enableNotifications, err := strconv.ParseBool(envOrDefault("ENABLE_NOTIFICATIONS", "true"))
+	if err != nil {
+		return nil, fmt.Errorf("ENABLE_NOTIFICATIONS is invalid (use true or false): %w", err)
+	}
+
 	webhookURL := os.Getenv("WEBHOOK_URL")
-	if webhookURL == "" {
+	if enableNotifications && webhookURL == "" {
 		return nil, fmt.Errorf("WEBHOOK_URL is not set")
 	}
 
@@ -49,6 +57,8 @@ func Load() (*Config, error) {
 		WebhookURL:     webhookURL,
 		WebhookFormat:  strings.ToLower(envOrDefault("WEBHOOK_FORMAT", "generic")),
 		BotName:        envOrDefault("BOT_NAME", "bot"),
+
+		EnableNotifications: enableNotifications,
 	}, nil
 }
 
