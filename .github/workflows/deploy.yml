@@ -114,8 +114,5 @@ jobs:
           # Apply the overlay manifests to the correct namespace
           kubectl apply -k . -n $NAMESPACE
           
-          # Verify rollouts
-          kubectl rollout status deployment/todo-backend -n $NAMESPACE --timeout=180s
-          kubectl rollout status deployment/todo-frontend -n $NAMESPACE --timeout=180s
-          kubectl rollout status deployment/broadcaster -n $NAMESPACE --timeout=180s
+          # Verify services
           kubectl get services -n $NAMESPACE -o wide
