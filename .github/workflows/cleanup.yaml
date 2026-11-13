@@ -37,6 +37,13 @@ jobs:
         env:
           BRANCH: ${{ github.event.ref }}
         run: |
-          echo "Deleting namespace $BRANCH"
-          kubectl delete namespace "$BRANCH" --ignore-not-found --wait=false
-          kubectl get namespaces
+          # Must use the same slug rule as release.yml
+          SLUG=$(echo "$REF_NAME" | tr '[:upper:]' '[:lower:]' \
+                 | sed 's/[^a-z0-9-]/-/g; s/^-*//; s/-*$//' | cut -c1-40)
+
+          case "$SLUG" in
+            production|staging|default|kube-*)
+              echo "Refusing to delete reserved namespace '$SLUG'"; exit 1 ;;
+          esac
+
+          kubectl delete namespace "$SLUG" --ignore-not-found

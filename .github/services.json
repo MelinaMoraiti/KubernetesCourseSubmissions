@@ -1,0 +1,20 @@
+[
+  {
+    "image": "todo-backend",
+    "context": "./todo-backend",
+    "placeholder": "melinadevops/todo-backend",
+    "deployment": "todo-backend"
+  },
+  {
+    "image": "todo-app",
+    "context": "./todo-frontend",
+    "placeholder": "melinadevops/todo-app",
+    "deployment": "todo-frontend"
+  },
+  {
+    "image": "broadcaster",
+    "context": "./broadcaster",
+    "placeholder": "melinadevops/broadcaster",
+    "deployment": "broadcaster"
+  }
+]
