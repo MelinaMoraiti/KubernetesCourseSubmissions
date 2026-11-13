@@ -1,186 +1,114 @@
 name: Release application
-
+ 
 on:
   push:
-    branches: ['**']
-    tags: ['v*.*.*']
-
-# Least privilege: read the repo, and request an OIDC token for Google Cloud
+    branches:
+      - '**'
+    tags:
+      - 'v*.*.*'
+ 
 permissions:
   contents: read
   id-token: write
-
+ 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
   GKE_CLUSTER: dwk-cluster
   GKE_ZONE: europe-west8-c
   REGISTRY: europe-west8-docker.pkg.dev
   REPOSITORY: my-repository
-
+  BACKEND_IMAGE: todo-backend
+  FRONTEND_IMAGE: todo-app
+  BROADCASTER_IMAGE: broadcaster
+ 
 jobs:
-  # ---------------------------------------------------------------
-  # 1. PREPARE: decide WHERE we deploy and WHAT we tag. No cloud
-  #    access needed, so it is fast and cheap.
-  # ---------------------------------------------------------------
-  prepare:
-    name: Determine target
+  build-publish-deploy:
+    name: Build, publish and deploy
     runs-on: ubuntu-latest
-    outputs:
-      environment: ${{ steps.meta.outputs.environment }}
-      namespace: ${{ steps.meta.outputs.namespace }}
-      overlay: ${{ steps.meta.outputs.overlay }}
-      image_tag: ${{ steps.meta.outputs.image_tag }}
-      services: ${{ steps.services.outputs.services }}
+    environment: GKE_PROJECT
+ 
     steps:
-      - uses: actions/checkout@v4
-
-      # Read the service list once and pass it on as a single-line JSON string
-      - id: services
-        run: echo "services=$(jq -c . .github/services.json)" >> "$GITHUB_OUTPUT"
-
-      - id: meta
-        env:
-          # Passed via env, never inline in run:. Branch names are
-          # attacker-controlled and could inject shell commands.
-          REF: ${{ github.ref }}
-          REF_NAME: ${{ github.ref_name }}
-          SHA: ${{ github.sha }}
-        run: |
-          SHORT_SHA="${SHA::7}"
-
-          # Make the name safe for Kubernetes namespaces and Docker tags:
-          # lowercase, only a-z 0-9 and "-", no leading/trailing "-", max 40 chars
-          SLUG=$(echo "$REF_NAME" | tr '[:upper:]' '[:lower:]' \
-                 | sed 's/[^a-z0-9-]/-/g; s/^-*//; s/-*$//' | cut -c1-40)
-
-          if [[ "$REF" == refs/tags/* ]]; then
-            # Tagged commit -> production
-            ENVIRONMENT=production
-            NAMESPACE=production
-            OVERLAY=overlays/prod
-            TAG="${SLUG}-${SHORT_SHA}"
-
-          elif [[ "$REF_NAME" == "main" ]]; then
-            # main -> staging
-            ENVIRONMENT=staging
-            NAMESPACE=staging
-            OVERLAY=overlays/staging
-            TAG="main-${SHORT_SHA}"
-
-          else
-            # Any other branch -> namespace named after the branch,
-            # using the staging configuration
-            case "$SLUG" in
-              production|staging|default|kube-*)
-                echo "Branch name '$SLUG' collides with a reserved namespace"
-                exit 1 ;;
-            esac
-            ENVIRONMENT=preview
-            NAMESPACE="$SLUG"
-            OVERLAY=overlays/staging
-            TAG="${SLUG}-${SHORT_SHA}"
-          fi
-
-          {
-            echo "environment=$ENVIRONMENT"
-            echo "namespace=$NAMESPACE"
-            echo "overlay=$OVERLAY"
-            echo "image_tag=$TAG"
-          } >> "$GITHUB_OUTPUT"
-
-  # ---------------------------------------------------------------
-  # 2. BUILD: one parallel job per service, generated from
-  #    services.json. Nothing here touches the cluster.
-  # ---------------------------------------------------------------
-  build:
-    name: Build ${{ matrix.image }}
-    needs: prepare
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        include: ${{ fromJSON(needs.prepare.outputs.services) }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: google-github-actions/auth@v3
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+ 
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
         with:
           workload_identity_provider: "${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}"
           service_account: "${{ secrets.SERVICE_ACCOUNT }}"
-
-      - uses: google-github-actions/setup-gcloud@v3
-
+ 
+      - name: 'Set up Cloud SDK'
+        uses: google-github-actions/setup-gcloud@v3
+ 
       - name: Configure Docker for Artifact Registry
-        run: gcloud auth configure-docker "$REGISTRY" --quiet
-
-      - uses: docker/setup-buildx-action@v3
-
-      - name: Build and push
-        uses: docker/build-push-action@v6
+        run: gcloud auth configure-docker $REGISTRY --quiet
+ 
+      - name: Get GKE Credentials
+        uses: google-github-actions/get-gke-credentials@v3
         with:
-          context: ${{ matrix.context }}
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ secrets.GKE_PROJECT }}/${{ env.REPOSITORY }}/${{ matrix.image }}:${{ needs.prepare.outputs.image_tag }}
-          # Cache layers in GitHub's cache, one scope per service
-          cache-from: type=gha,scope=${{ matrix.image }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.image }}
-
-  # ---------------------------------------------------------------
-  # 3. DEPLOY: runs only if ALL builds succeeded.
-  # ---------------------------------------------------------------
-  deploy:
-    name: Deploy to ${{ needs.prepare.outputs.namespace }}
-    needs: [prepare, build]
-    runs-on: ubuntu-latest
-    # GitHub Environment: staging / production / preview.
-    # Add required reviewers to "production" in the repo settings.
-    environment: ${{ needs.prepare.outputs.environment }}
-    # One deployment per namespace at a time; queue instead of cancelling
-    # so a rollout is never interrupted halfway
-    concurrency:
-      group: deploy-${{ needs.prepare.outputs.namespace }}
-      cancel-in-progress: false
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: google-github-actions/auth@v3
-        with:
-          workload_identity_provider: "${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}"
-          service_account: "${{ secrets.SERVICE_ACCOUNT }}"
-
-      - uses: google-github-actions/get-gke-credentials@v3
-        with:
-          cluster_name: ${{ env.GKE_CLUSTER }}
-          project_id: ${{ env.PROJECT_ID }}
-          location: ${{ env.GKE_ZONE }}
-
-      - uses: imranismail/setup-kustomize@v3
-
-      - name: Deploy
-        env:
-          NAMESPACE: ${{ needs.prepare.outputs.namespace }}
-          OVERLAY: ${{ needs.prepare.outputs.overlay }}
-          TAG: ${{ needs.prepare.outputs.image_tag }}
-          PREFIX: ${{ env.REGISTRY }}/${{ secrets.GKE_PROJECT }}/${{ env.REPOSITORY }}
+          cluster_name: '${{ env.GKE_CLUSTER }}'
+          project_id: '${{ env.PROJECT_ID }}'
+          location: '${{ env.GKE_ZONE }}'
+ 
+      - name: Determine Environment, Namespace, and Tags
+        id: meta
         run: |
-          SERVICES="$GITHUB_WORKSPACE/.github/services.json"
-
-          # Create the namespace if missing (idempotent)
-          kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
-
-          cd "$OVERLAY"
-          kustomize edit set namespace "$NAMESPACE"
-
-          # Point every placeholder image at the freshly built one
-          while IFS=$'\t' read -r placeholder image; do
-            kustomize edit set image "$placeholder=$PREFIX/$image:$TAG"
-          done < <(jq -r '.[] | [.placeholder, .image] | @tsv' "$SERVICES")
-
-          kubectl apply -k .
-
-          # Wait for each deployment; a failure here fails the job
-          for d in $(jq -r '.[].deployment' "$SERVICES"); do
-            kubectl rollout status "deployment/$d" -n "$NAMESPACE" --timeout=180s
-          done
-
-          kubectl get services -n "$NAMESPACE" -o wide
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            # 1. Tagged commit -> Production
+            VERSION="${GITHUB_REF#refs/tags/}"
+            echo "env_name=production" >> $GITHUB_OUTPUT
+            echo "namespace=production" >> $GITHUB_OUTPUT
+            echo "overlay_path=overlays/prod" >> $GITHUB_OUTPUT
+            echo "image_tag=v-${VERSION}-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref_name }}" == "main" ]]; then
+            # 2. Main branch commit -> Staging namespace
+            echo "env_name=staging" >> $GITHUB_OUTPUT
+            echo "namespace=staging" >> $GITHUB_OUTPUT
+            echo "overlay_path=overlays/staging" >> $GITHUB_OUTPUT
+            echo "image_tag=main-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          else
+ 
+      - name: Form the image names
+        run: |
+          TAG="${{ steps.meta.outputs.image_tag }}"
+          echo "BACKEND_TAG=$REGISTRY/$PROJECT_ID/$REPOSITORY/$BACKEND_IMAGE:$TAG" >> $GITHUB_ENV
+          echo "APP_TAG=$REGISTRY/$PROJECT_ID/$REPOSITORY/$FRONTEND_IMAGE:$TAG" >> $GITHUB_ENV
+          echo "BROADCASTER_TAG=$REGISTRY/$PROJECT_ID/$REPOSITORY/$BROADCASTER_IMAGE:$TAG" >> $GITHUB_ENV
+ 
+      - name: Build
+        run: |
+          docker build --tag $BACKEND_TAG ./todo-backend
+          docker build --tag $APP_TAG ./todo-frontend
+          docker build --tag $BROADCASTER_TAG ./broadcaster
+ 
+      - name: Publish
+        run: |
+          docker push $BACKEND_TAG
+          docker push $APP_TAG
+          docker push $BROADCASTER_TAG
+ 
+      - uses: imranismail/setup-kustomize@v3
+ 
+      - name: Deploy via Kustomize Overlay
+        run: |
+          OVERLAY="${{ steps.meta.outputs.overlay_path }}"
+          NAMESPACE="${{ steps.meta.outputs.namespace }}"
+ 
+          # Ensure the dynamic namespace exists before applying Kustomize
+          kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
+ 
+          cd $OVERLAY
+          
+          # Update the images inside the specific overlay
+          kustomize edit set image melinadevops/todo-backend=$BACKEND_TAG
+          kustomize edit set image melinadevops/todo-app=$APP_TAG
+          kustomize edit set image melinadevops/broadcaster=$BROADCASTER_TAG
+ 
+          # Apply the overlay manifests to the correct namespace
+          kubectl apply -k . -n $NAMESPACE
+          
+          # Verify rollouts
+          kubectl rollout status deployment/todo-backend -n $NAMESPACE --timeout=180s
+          kubectl rollout status deployment/todo-frontend -n $NAMESPACE --timeout=180s
+          kubectl rollout status deployment/broadcaster -n $NAMESPACE --timeout=180s
+          kubectl get services -n $NAMESPACE -o wide
