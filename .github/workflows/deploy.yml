@@ -57,7 +57,7 @@ jobs:
             # Tagged commit -> production
             ENVIRONMENT=production
             NAMESPACE=production
-            OVERLAY=overlays/production
+            OVERLAY=overlays/prod
             TAG="${SLUG}-${SHORT_SHA}"
 
           elif [[ "$REF_NAME" == "main" ]]; then
@@ -105,8 +105,8 @@ jobs:
 
       - uses: google-github-actions/auth@v3
         with:
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+          workload_identity_provider: "${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}"
+          service_account: "${{ secrets.SERVICE_ACCOUNT }}"
 
       - uses: google-github-actions/setup-gcloud@v3
 
@@ -145,8 +145,8 @@ jobs:
 
       - uses: google-github-actions/auth@v3
         with:
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+          workload_identity_provider: "${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}"
+          service_account: "${{ secrets.SERVICE_ACCOUNT }}"
 
       - uses: google-github-actions/get-gke-credentials@v3
         with:
