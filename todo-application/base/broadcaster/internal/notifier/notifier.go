@@ -46,7 +46,6 @@ func New(format, url string) (Notifier, error) {
 			return map[string]any{
 				"username": m.User,
 				"content":  content,
-				// A todo text must never be able to ping @everyone.
 				"allowed_mentions": map[string]any{"parse": []string{}},
 			}
 		}
