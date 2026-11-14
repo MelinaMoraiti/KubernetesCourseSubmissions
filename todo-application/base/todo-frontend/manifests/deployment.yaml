@@ -5,7 +5,7 @@ metadata:
 spec:
   replicas: 1
   strategy:
-    type: Recreate        # old pod is stopped before the new one starts
+    type: Recreate        
   selector:
     matchLabels:
       app: todo-app
@@ -15,7 +15,7 @@ spec:
       labels:
         app: todo-app
     spec:
-      volumes: # Define volume
+      volumes: 
         - name: images
           persistentVolumeClaim:
             claimName: images-claim
@@ -38,21 +38,21 @@ spec:
             requests:
               cpu: "25m"
               memory: "32Mi"
-          # livenessProbe: 
-          #   initialDelaySeconds: 10
-          #   periodSeconds: 5 
-          #   httpGet:
-          #     path: /healthz
-          #     port: http-port 
-          #   timeoutSeconds: 2
-          #   failureThreshold: 1
-          #   successThreshold: 1 
-          # readinessProbe:
-          #   initialDelaySeconds: 10
-          #   periodSeconds: 5
-          #   httpGet:
-          #     path: /readyz
-          #     port: http-port
-          #   failureThreshold: 1   
-          #   successThreshold: 1
-          #   timeoutSeconds: 2            
+          livenessProbe: 
+            initialDelaySeconds: 10
+            periodSeconds: 5 
+            httpGet:
+              path: /healthz
+              port: http-port 
+            timeoutSeconds: 2
+            failureThreshold: 1
+            successThreshold: 1 
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            httpGet:
+              path: /readyz
+              port: http-port
+            failureThreshold: 1   
+            successThreshold: 1
+            timeoutSeconds: 2            
