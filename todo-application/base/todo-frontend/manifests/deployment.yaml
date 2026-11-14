@@ -38,15 +38,15 @@ spec:
             requests:
               cpu: "25m"
               memory: "32Mi"
-          livenessProbe: 
-            initialDelaySeconds: 10
-            periodSeconds: 5 
-            httpGet:
-              path: /healthz
-              port: http-port 
-            timeoutSeconds: 2
-            failureThreshold: 1
-            successThreshold: 1 
+          # livenessProbe: 
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 5 
+          #   httpGet:
+          #     path: /healthz
+          #     port: http-port 
+          #   timeoutSeconds: 2
+          #   failureThreshold: 1
+          #   successThreshold: 1 
           readinessProbe:
             initialDelaySeconds: 10
             periodSeconds: 5
