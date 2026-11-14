@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://github.com/MelinaMoraiti/KubernetesCourseSubmissions'
     targetRevision: 'v*'  
-    path: overlays/prod
+    path: todo-application/overlays/prod
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: production

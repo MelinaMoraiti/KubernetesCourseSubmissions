@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://github.com/MelinaMoraiti/KubernetesCourseSubmissions'
     targetRevision: main  
-    path: overlays/staging
+    path: todo-application/overlays/staging
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: staging
