@@ -4,3 +4,6 @@ config:
     fileStore:
       pvc:
         size: 10Gi      
+    memoryStore:
+      enabled: true
+      maxSize: 1Gi
