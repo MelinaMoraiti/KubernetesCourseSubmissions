@@ -15,6 +15,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o todoapp cmd/main.
 
 # Final stage
 FROM alpine:latest
+RUN adduser -D -u 10001 app
 
 WORKDIR /
 
@@ -27,6 +28,8 @@ ENV TODO_BACKEND_URL=http://todo-backend:9000
 
 # Expose port
 EXPOSE 8000
+
+USER app
 
 # Run the application
 CMD ["./todoapp"]
