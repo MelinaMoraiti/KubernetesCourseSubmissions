@@ -27,12 +27,13 @@ func NewService(n notifier.Notifier, status messaging.StatusPublisher, botName s
 
 // HandleTodoEvent matches messaging.TodoEventHandler.
 func (s *Service) HandleTodoEvent(ctx context.Context, ev models.TodoEvent) error {
+	msg := models.StatusMessage{User: s.botName, Message: Describe(ev)}
+
+	// Notifications disabled: only log the message, send nothing.
 	if !s.enabled {
-		slog.Debug("notifications disabled, event skipped", "event_id", ev.ID, "type", ev.Type)
+		slog.Info("notification (not sent)", "event_id", ev.ID, "type", ev.Type, "user", msg.User, "message", msg.Message)
 		return nil
 	}
-
-	msg := models.StatusMessage{User: s.botName, Message: Describe(ev)}
 
 	// Detach from the app context so a message that is already being sent
 	// can finish while the service shuts down.
