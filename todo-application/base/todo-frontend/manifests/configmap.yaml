@@ -6,5 +6,5 @@ data:
   PORT: "8000"
   TODO_BACKEND_URL: "http://todo-backend-svc:80"
   STORED_IMAGES_PATH: "/usr/src/app/images/"
-  IMAGE_URL: "https://picsum.photos/1200"
+  IMAGE_URL: "https://doodleipsum.com/1920x1080/abstract"
   IMAGE_CACHE_DURATION: "10m"
