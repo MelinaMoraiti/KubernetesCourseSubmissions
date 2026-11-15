@@ -94,6 +94,8 @@
 
 - **Exercise 4.8:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/4.8)
 
+- **Exercise 4.9:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/4.9)
+
 Assume that NATS is pre-installed in the cluster using the file nats-values.yaml in the root directory, in namespace nats.
 
 # DBaaS vs Self-Managed Database on GKE (PVC)
