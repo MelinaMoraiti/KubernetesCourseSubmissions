@@ -1,122 +1,186 @@
 name: Release application
- 
+
 on:
   push:
     branches:
       - '**'
     tags:
       - '**'
- 
+
+# Least privilege: read-only by default, id-token only for OIDC/Workload Identity
 permissions:
   contents: read
   id-token: write
 
+# Cancel superseded runs on the same branch, but never cancel a tag (production) release
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
-  
+
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
   GKE_CLUSTER: dwk-cluster
   GKE_ZONE: europe-west8-c
   REGISTRY: europe-west8-docker.pkg.dev
   REPOSITORY: my-repository
-  BACKEND_IMAGE: todo-backend
-  FRONTEND_IMAGE: todo-app
-  BROADCASTER_IMAGE: broadcaster
- 
+
+# NOTE: Replace every <SHA> placeholder with the full commit SHA of the release
+# you want, keeping the version comment. Example lookup:
+#   gh api repos/google-github-actions/auth/git/ref/tags/v3 --jq .object.sha
+# Dependabot (package-ecosystem: github-actions) can keep these SHAs updated.
+
 jobs:
-  build-publish-deploy:
-    name: Build, publish and deploy
+  # ---------------------------------------------------------------------------
+  # 1. Work out environment, namespace, overlay and image tag once
+  # ---------------------------------------------------------------------------
+  meta:
+    name: Determine environment
     runs-on: ubuntu-latest
-    environment: GKE_PROJECT
- 
+    timeout-minutes: 5
+    outputs:
+      env_name: ${{ steps.meta.outputs.env_name }}
+      namespace: ${{ steps.meta.outputs.namespace }}
+      overlay_path: ${{ steps.meta.outputs.overlay_path }}
+      image_tag: ${{ steps.meta.outputs.image_tag }}
     steps:
-      - name: 'Checkout'
-        uses: actions/checkout@v4
- 
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v3
-        with:
-          workload_identity_provider: "${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}"
-          service_account: "${{ secrets.SERVICE_ACCOUNT }}"
- 
-      - name: 'Set up Cloud SDK'
-        uses: google-github-actions/setup-gcloud@v3
- 
-      - name: Configure Docker for Artifact Registry
-        run: gcloud auth configure-docker $REGISTRY --quiet
- 
-      - name: Get GKE Credentials
-        uses: google-github-actions/get-gke-credentials@v3
-        with:
-          cluster_name: '${{ env.GKE_CLUSTER }}'
-          project_id: '${{ env.PROJECT_ID }}'
-          location: '${{ env.GKE_ZONE }}'
- 
-      - name: Determine Environment, Namespace, and Tags
+      - name: Determine environment, namespace and tag
         id: meta
+        env:
+          # Passed via env (not inline ${{ }}) to avoid script injection from branch names
+          REF: ${{ github.ref }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
-          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            # 1. Tagged commit -> Production
-            VERSION="${GITHUB_REF#refs/tags/}"
-            echo "env_name=production" >> $GITHUB_OUTPUT
-            echo "namespace=production" >> $GITHUB_OUTPUT
-            echo "overlay_path=./todo-application/overlays/prod" >> $GITHUB_OUTPUT
-            echo "image_tag=v-${VERSION}-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref_name }}" == "main" ]]; then
-            # 2. Main branch commit -> Staging namespace
-            echo "env_name=staging" >> $GITHUB_OUTPUT
-            echo "namespace=staging" >> $GITHUB_OUTPUT
-            echo "overlay_path=./todo-application/overlays/staging" >> $GITHUB_OUTPUT
-            echo "image_tag=main-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          SHORT_SHA="${GITHUB_SHA::7}"
+          # Lowercase and replace anything not valid in a k8s namespace / image tag
+          SAFE_NAME="$(echo "$REF_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | cut -c1-40)"
+
+          if [[ "$REF" == refs/tags/* ]]; then
+            # Tagged commit -> production
+            echo "env_name=production" >> "$GITHUB_OUTPUT"
+            echo "namespace=production" >> "$GITHUB_OUTPUT"
+            echo "overlay_path=./todo-application/overlays/prod" >> "$GITHUB_OUTPUT"
+            echo "image_tag=${SAFE_NAME}-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          elif [[ "$REF_NAME" == "main" ]]; then
+            # Main branch -> staging
+            echo "env_name=staging" >> "$GITHUB_OUTPUT"
+            echo "namespace=staging" >> "$GITHUB_OUTPUT"
+            echo "overlay_path=./todo-application/overlays/staging" >> "$GITHUB_OUTPUT"
+            echo "image_tag=main-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
           else
-            # 3. Any other branch -> Namespace equals branch name (using staging config overlay)
-            BRANCH_NAME="${{ github.ref_name }}"
-            echo "env_name=${BRANCH_NAME}" >> $GITHUB_OUTPUT
-            echo "namespace=${BRANCH_NAME}" >> $GITHUB_OUTPUT
-            echo "overlay_path=./todo-application/overlays/base" >> $GITHUB_OUTPUT
-            echo "image_tag=${BRANCH_NAME}-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+            # Any other branch -> namespace named after the branch
+            echo "env_name=${SAFE_NAME}" >> "$GITHUB_OUTPUT"
+            echo "namespace=${SAFE_NAME}" >> "$GITHUB_OUTPUT"
+            echo "overlay_path=./todo-application/overlays/base" >> "$GITHUB_OUTPUT"
+            echo "image_tag=${SAFE_NAME}-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
           fi
- 
-      - name: Form the image names
+
+  # ---------------------------------------------------------------------------
+  # 2. Build and push all three images in parallel
+  # ---------------------------------------------------------------------------
+  build:
+    name: Build ${{ matrix.image }}
+    needs: meta
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: GKE_PROJECT
+    strategy:
+      fail-fast: true # one failed image means the release is broken anyway; stop early
+      matrix:
+        include:
+          - image: todo-backend
+            context: ./todo-application/base/todo-backend
+          - image: todo-app
+            context: ./todo-application/base/todo-frontend
+          - image: broadcaster
+            context: ./todo-application/base/broadcaster
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 1
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@<SHA> # v3
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@<SHA> # v3
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker "$REGISTRY" --quiet
+
+      - name: Build image
+        env:
+          IMAGE_REF: ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ matrix.image }}:${{ needs.meta.outputs.image_tag }}
+        run: docker build --tag "$IMAGE_REF" "${{ matrix.context }}"
+
+      - name: Push image
+        env:
+          IMAGE_REF: ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ matrix.image }}:${{ needs.meta.outputs.image_tag }}
+        run: docker push "$IMAGE_REF"
+
+  # ---------------------------------------------------------------------------
+  # 3. Deploy only after every image has been pushed successfully
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: Deploy to ${{ needs.meta.outputs.env_name }}
+    needs: [meta, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: GKE_PROJECT
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 1
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@<SHA> # v3
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@<SHA> # v3
+
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@<SHA> # v3
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          project_id: ${{ env.PROJECT_ID }}
+          location: ${{ env.GKE_ZONE }}
+
+      - name: Set up Kustomize
+        uses: imranismail/setup-kustomize@<SHA> # v2
+
+      - name: Deploy via Kustomize overlay
+        env:
+          OVERLAY: ${{ needs.meta.outputs.overlay_path }}
+          NAMESPACE: ${{ needs.meta.outputs.namespace }}
+          TAG: ${{ needs.meta.outputs.image_tag }}
         run: |
-          TAG="${{ steps.meta.outputs.image_tag }}"
-          echo "BACKEND_TAG=$REGISTRY/$PROJECT_ID/$REPOSITORY/$BACKEND_IMAGE:$TAG" >> $GITHUB_ENV
-          echo "APP_TAG=$REGISTRY/$PROJECT_ID/$REPOSITORY/$FRONTEND_IMAGE:$TAG" >> $GITHUB_ENV
-          echo "BROADCASTER_TAG=$REGISTRY/$PROJECT_ID/$REPOSITORY/$BROADCASTER_IMAGE:$TAG" >> $GITHUB_ENV
- 
-      - name: Build
+          BASE="$REGISTRY/$PROJECT_ID/$REPOSITORY"
+
+          # Ensure the namespace exists before applying
+          kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
+
+          cd "$OVERLAY"
+
+          # Point the overlay at the freshly built images
+          kustomize edit set image melinadevops/todo-backend="$BASE/todo-backend:$TAG"
+          kustomize edit set image melinadevops/todo-app="$BASE/todo-app:$TAG"
+          kustomize edit set image melinadevops/broadcaster="$BASE/broadcaster:$TAG"
+
+          kubectl apply -k . -n "$NAMESPACE"
+
+      - name: Verify rollout
+        env:
+          NAMESPACE: ${{ needs.meta.outputs.namespace }}
         run: |
-          docker build --tag $BACKEND_TAG ./todo-application/base/todo-backend
-          docker build --tag $APP_TAG ./todo-application/base/todo-frontend
-          docker build --tag $BROADCASTER_TAG ./todo-application/base/broadcaster
- 
-      - name: Publish
-        run: |
-          docker push $BACKEND_TAG
-          docker push $APP_TAG
-          docker push $BROADCASTER_TAG
- 
-      - uses: imranismail/setup-kustomize@v3
- 
-      - name: Deploy via Kustomize Overlay
-        run: |
-          OVERLAY="${{ steps.meta.outputs.overlay_path }}"
-          NAMESPACE="${{ steps.meta.outputs.namespace }}"
- 
-          # Ensure the dynamic namespace exists before applying Kustomize
-          kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
- 
-          cd $OVERLAY
-          
-          # Update the images inside the specific overlay
-          kustomize edit set image melinadevops/todo-backend=$BACKEND_TAG
-          kustomize edit set image melinadevops/todo-app=$APP_TAG
-          kustomize edit set image melinadevops/broadcaster=$BROADCASTER_TAG
- 
-          # Apply the overlay manifests to the correct namespace
-          kubectl apply -k . -n $NAMESPACE
-          
-          # Verify services
-          kubectl get services -n $NAMESPACE -o wide
+          # Fail the job (and surface the problem) if any Deployment does not become ready
+          for d in $(kubectl get deployments -n "$NAMESPACE" -o name); do
+            kubectl rollout status "$d" -n "$NAMESPACE" --timeout=180s
+          done
+          kubectl get services -n "$NAMESPACE" -o wide
