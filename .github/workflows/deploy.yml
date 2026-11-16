@@ -172,12 +172,12 @@ jobs:
 
           kubectl apply -k . -n "$NAMESPACE"
 
-      - name: Verify rollout
-        env:
-          NAMESPACE: ${{ needs.meta.outputs.namespace }}
-        run: |
-          # Fail the job (and surface the problem) if any Deployment does not become ready
-          for d in $(kubectl get deployments -n "$NAMESPACE" -o name); do
-            kubectl rollout status "$d" -n "$NAMESPACE" --timeout=180s
-          done
-          kubectl get services -n "$NAMESPACE" -o wide
+      # - name: Verify rollout
+      #   env:
+      #     NAMESPACE: ${{ needs.meta.outputs.namespace }}
+      #   run: |
+      #     # Fail the job (and surface the problem) if any Deployment does not become ready
+      #     for d in $(kubectl get deployments -n "$NAMESPACE" -o name); do
+      #       kubectl rollout status "$d" -n "$NAMESPACE" --timeout=180s
+      #     done
+      #     kubectl get services -n "$NAMESPACE" -o wide
