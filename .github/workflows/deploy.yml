@@ -83,11 +83,11 @@ jobs:
       matrix:
         include:
           - image: todo-backend
-            context: ./todo-application/base/todo-backend
+            context: ./todo-application/todo-backend
           - image: todo-app
-            context: ./todo-application/base/todo-frontend
+            context: ./todo-application/todo-frontend
           - image: broadcaster
-            context: ./todo-application/base/broadcaster
+            context: ./todo-application/broadcaster
     steps:
       - name: Checkout
         uses: actions/checkout@v4
