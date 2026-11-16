@@ -163,7 +163,7 @@ jobs:
           # Ensure the namespace exists before applying
           kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
 
-          cd "configs/$OVERLAY" 
+          cd "todo-app-config/$OVERLAY" 
 
           # Point the overlay at the freshly built images
           kustomize edit set image melinadevops/todo-backend="$BASE/todo-backend:$TAG"
