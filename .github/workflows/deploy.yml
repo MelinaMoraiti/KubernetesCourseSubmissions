@@ -53,19 +53,19 @@ jobs:
             # Tagged commit -> production
             echo "env_name=production" >> "$GITHUB_OUTPUT"
             echo "namespace=production" >> "$GITHUB_OUTPUT"
-            echo "overlay_path=https://github.com/MelinaMoraiti/TodoAppConfigs/tree/main/todo-app-config/todo-application/overlays/prod" >> "$GITHUB_OUTPUT"
+            echo "overlay_path=todo-application/overlays/prod" >> "$GITHUB_OUTPUT"
             echo "image_tag=${SAFE_NAME}-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
           elif [[ "$REF_NAME" == "main" ]]; then
             # Main branch -> staging
             echo "env_name=staging" >> "$GITHUB_OUTPUT"
             echo "namespace=staging" >> "$GITHUB_OUTPUT"
-            echo "overlay_path=https://github.com/MelinaMoraiti/TodoAppConfigs/tree/main/todo-app-config/todo-application/overlays/staging" >> "$GITHUB_OUTPUT"
+            echo "overlay_path=todo-application/overlays/staging" >> "$GITHUB_OUTPUT"
             echo "image_tag=main-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
           else
             # Any other branch -> namespace named after the branch
             echo "env_name=${SAFE_NAME}" >> "$GITHUB_OUTPUT"
             echo "namespace=${SAFE_NAME}" >> "$GITHUB_OUTPUT"
-            echo "overlay_path=https://github.com/MelinaMoraiti/TodoAppConfigs/tree/main/todo-app-config/todo-application/base" >> "$GITHUB_OUTPUT"
+            echo "overlay_path=todo-application/base" >> "$GITHUB_OUTPUT"
             echo "image_tag=${SAFE_NAME}-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
           fi
 
@@ -126,9 +126,11 @@ jobs:
     timeout-minutes: 15
     environment: GKE_PROJECT
     steps:
-      - name: Checkout
+      - name: Checkout config repo
         uses: actions/checkout@v4
         with:
+          repository: MelinaMoraiti/TodoAppConfigs
+          path: todo-app-config
           fetch-depth: 1
 
       - name: Authenticate to Google Cloud
@@ -161,7 +163,7 @@ jobs:
           # Ensure the namespace exists before applying
           kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
 
-          cd "$OVERLAY"
+          cd "configs/$OVERLAY" 
 
           # Point the overlay at the freshly built images
           kustomize edit set image melinadevops/todo-backend="$BASE/todo-backend:$TAG"
