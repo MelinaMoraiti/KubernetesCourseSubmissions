@@ -53,19 +53,19 @@ jobs:
             # Tagged commit -> production
             echo "env_name=production" >> "$GITHUB_OUTPUT"
             echo "namespace=production" >> "$GITHUB_OUTPUT"
-            echo "overlay_path=./todo-application/overlays/prod" >> "$GITHUB_OUTPUT"
+            echo "overlay_path=https://github.com/MelinaMoraiti/TodoAppConfigs/tree/main/todo-app-config/todo-application/overlays/prod" >> "$GITHUB_OUTPUT"
             echo "image_tag=${SAFE_NAME}-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
           elif [[ "$REF_NAME" == "main" ]]; then
             # Main branch -> staging
             echo "env_name=staging" >> "$GITHUB_OUTPUT"
             echo "namespace=staging" >> "$GITHUB_OUTPUT"
-            echo "overlay_path=./todo-application/overlays/staging" >> "$GITHUB_OUTPUT"
+            echo "overlay_path=https://github.com/MelinaMoraiti/TodoAppConfigs/tree/main/todo-app-config/todo-application/overlays/staging" >> "$GITHUB_OUTPUT"
             echo "image_tag=main-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
           else
             # Any other branch -> namespace named after the branch
             echo "env_name=${SAFE_NAME}" >> "$GITHUB_OUTPUT"
             echo "namespace=${SAFE_NAME}" >> "$GITHUB_OUTPUT"
-            echo "overlay_path=./todo-application/overlays/base" >> "$GITHUB_OUTPUT"
+            echo "overlay_path=https://github.com/MelinaMoraiti/TodoAppConfigs/tree/main/todo-app-config/todo-application/base" >> "$GITHUB_OUTPUT"
             echo "image_tag=${SAFE_NAME}-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
           fi
 
