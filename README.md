@@ -102,6 +102,7 @@ Comments: Assume that NATS is pre-installed in the cluster using the file nats-v
 
 ## Chapter 6: Under the hood
 
+- **Exercise 5.1:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/5.1)
 
 # DBaaS vs Self-Managed Database on GKE (PVC)
 
