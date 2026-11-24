@@ -106,6 +106,8 @@ Comments: Assume that NATS is pre-installed in the cluster using the file nats-v
 
 - **Exercise 5.2:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/5.2)
 
+- **Exercise 5.3:** [Release Link](https://github.com/MelinaMoraiti/KubernetesCourseSubmissions/tree/5.3)
+
 # DBaaS vs Self-Managed Database on GKE (PVC)
 
 Currently runs a self managed Redis. We compare this solution with a self-managed service such as Google Memorystore. 

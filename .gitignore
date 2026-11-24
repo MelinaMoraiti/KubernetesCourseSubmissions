@@ -7,3 +7,4 @@ private-key.json
 *.pem
 .env
 secret.yaml
+/istio*/istio-*/

@@ -116,10 +116,6 @@ func main() {
 
 	// Initialize health check instance with PostgreSQL checker
 	h, err := health.New(
-		health.WithComponent(health.Component{
-			Name:    "pingpong-service",
-			Version: "v1.0.0",
-		}),
 		health.WithSystemInfo(),
 	)
 	if err != nil {

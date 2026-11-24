@@ -45,15 +45,15 @@ func main() {
 	*/
 	const charset = "abcdefghijklmnopqrstuvwxyz" +
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" +
-		"@#!$%^&*()-+=_~`}{][|\\><?"
+		"-"
 
-	// Read port from environment variable (default 8080)
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "3000"
 	}
 	ping_pong_host := os.Getenv("PING_PONG_APP_HOST")
 	message := os.Getenv("MESSAGE")
+	greeter_host := os.Getenv("GREETER_HOST")
 	
 	fileContent, err := os.ReadFile("/etc/config/information.txt")
 	if err != nil {
@@ -90,16 +90,19 @@ func main() {
 	// Main root HTTP endpoint
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		pingsURL := ping_pong_host + "/pings"
+		greetingsURL := greeter_host + "/hello"
 		pings := fetchPings(pingsURL)
+		hello_greet := fetchPings(greetingsURL)
 		timestamp := time.Now().UTC().Format(time.RFC3339Nano)
 		fmt.Fprintf(
 			w,
-			"file content: %senv variable: MESSAGE=%s\n%s: %s.\n%s",
+			"file content: %senv variable: MESSAGE=%s\n%s: %s.\n%s\n%s\n",
 			string(fileContent),
 			message,
 			timestamp,
 			randomString,
 			pings,
+			hello_greet,
 		)
 	})
 

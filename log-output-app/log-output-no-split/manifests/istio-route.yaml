@@ -1,0 +1,39 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: greeter
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - greet-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /hello
+    route:
+    - destination:
+        host: greeter-svc-v1
+        port:
+          number: 80
+      weight: 75
+    - destination:
+        host: greeter-svc-v2
+        port:
+          number: 80
+      weight: 25
+  - match:
+    - uri:
+        prefix: /pingpong
+    - uri:
+        prefix: /pings
+    route:
+    - destination:
+        host: pingpong-svc
+        port:
+          number: 80
+  - route:            
+    - destination:
+        host: logoutput-svc
+        port:
+          number: 80

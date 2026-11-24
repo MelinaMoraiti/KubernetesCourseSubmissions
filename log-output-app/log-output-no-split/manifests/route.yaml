@@ -1,11 +1,37 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: my-route
+  name: greeter
+  namespace: exercises
 spec:
   parentRefs:
-    - name: my-gateway
+  - group: ""
+    kind: Service
+    name: greeter-svc
+    port: 80
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /hello
+    backendRefs:
+    - name: greeter-svc-v1
+      port: 80
+      weight: 75
+    - name: greeter-svc-v2
+      port: 80
+      weight: 25
 
+--- 
+
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: external
+  namespace: exercises
+spec:
+  parentRefs:
+    - name: greet-gateway
   rules:
     - matches:
         - path:
@@ -35,4 +61,12 @@ spec:
             value: /
       backendRefs:
         - name: logoutput-svc
+          port: 80
+
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /hello
+      backendRefs:
+        - name: greeter-svc
           port: 80
