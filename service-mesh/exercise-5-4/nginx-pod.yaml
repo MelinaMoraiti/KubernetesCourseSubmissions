@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wikipedia
+  labels:
+    app: wikipedia
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wikipedia
+  template:
+    metadata:
+      labels:
+        app: wikipedia
+    spec:
+      volumes:
+        - name: www
+          emptyDir: {}
+
+      initContainers:
+        - name: fetch-kubernetes-page
+          image: curlimages/curl:8.10.1
+          command:
+            - sh
+            - -c
+            - >
+              curl -sSL --fail
+              -A "wikipedia-demo/1.0 (kubernetes example)"
+              -o /www/index.html
+              https://en.wikipedia.org/wiki/Kubernetes
+          volumeMounts:
+            - name: www
+              mountPath: /www
+
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: www
+              mountPath: /usr/share/nginx/html
+              readOnly: true
+
+        - name: random-page-fetcher
+          image: curlimages/curl:8.10.1
+          command:
+            - sh
+            - -c
+            - |
+              while true; do
+                # random delay between 300 and 900 seconds (5-15 minutes)
+                DELAY=$(( 300 + $(od -An -N2 -tu2 /dev/urandom) % 601 ))
+                echo "Sleeping for ${DELAY}s"
+                sleep "$DELAY"
+                echo "Fetching a random Wikipedia page"
+                # write to a temp file first, then move, so nginx never serves a partial page
+                if curl -sSL --fail \
+                     -A "wikipedia-demo/1.0 (kubernetes example)" \
+                     -o /www/.tmp.html \
+                     https://en.wikipedia.org/wiki/Special:Random; then
+                  mv /www/.tmp.html /www/index.html
+                else
+                  echo "Fetch failed, keeping previous page"
+                fi
+              done
+          volumeMounts:
+            - name: www
+              mountPath: /www
