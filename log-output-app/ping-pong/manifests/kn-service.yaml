@@ -1,0 +1,14 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: pingpong-svc
+spec:
+  template:
+    spec:
+      containers:
+      - image: melinadevops/pingpong:latest
+        ports:
+        - containerPort: 80
+        env:
+          - name: DATABASE_URL
+            value: "postgres://postgres:testpassword@postgres-db-lb:5432/postgres?sslmode=disable"

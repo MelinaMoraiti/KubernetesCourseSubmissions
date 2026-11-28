@@ -5,19 +5,20 @@ resources:
   - namespace.yaml
   - log-output-no-split/manifests/deployment-persistent.yaml
   - log-output-no-split/manifests/configmap.yaml
-  # - log-output-no-split/manifests/gateway.yaml
+  - log-output-no-split/manifests/gateway.yaml
   - log-output-no-split/manifests/route.yaml
   # - log-output-no-split/manifests/ingress.yaml
-  - log-output-no-split/manifests/istio-gateway.yaml
+  # - log-output-no-split/manifests/istio-gateway.yaml
   # - log-output-no-split/manifests/istio-route.yaml
-
   - log-output-no-split/manifests/service.yaml
-  - ping-pong/manifests/deployment-persistent.yaml
+  
+  - ping-pong/manifests/kn-service.yaml
+  # - ping-pong/manifests/deployment-persistent.yaml
   - ping-pong/manifests/postgres-statefulset.yaml
   - ping-pong/manifests/postgres-svc.yaml
   # - ping-pong/manifests/analysistemplate.yaml
   # - ping-pong/manifests/rollout.yaml
-  - ping-pong/manifests/service.yaml
+  # - ping-pong/manifests/service.yaml
 
   - greeter/manifests/configmap.yaml
   - greeter/manifests/deployment.yaml

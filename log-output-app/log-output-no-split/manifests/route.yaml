@@ -40,6 +40,7 @@ spec:
       filters:
         - type: URLRewrite
           urlRewrite:
+            hostname: pingpong-svc.exercises.192.168.144.3.sslip.io
             path:
               type: ReplacePrefixMatch
               replacePrefixMatch: /

@@ -27,7 +27,7 @@ spec:
             - name: PORT
               value: "3000"
             - name: PING_PONG_APP_HOST
-              value: "http://pingpong-svc:80"
+              value: "http://pingpong-svc.exercises.svc.cluster.local:80"
             - name: GREETER_HOST
               value: "http://greeter-svc:80"
             - name: MESSAGE
